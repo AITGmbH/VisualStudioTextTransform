@@ -1,0 +1,1 @@
+﻿Some simple string format with this

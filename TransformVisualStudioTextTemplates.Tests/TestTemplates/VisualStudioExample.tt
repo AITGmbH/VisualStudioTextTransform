@@ -1,0 +1,21 @@
+﻿<#@ Template Debug="False" Hostspecific="True" Language="C#" #>
+<#@ Output Extension=".txt" #>
+<#@ Assembly Name="EnvDTE"                                                #>
+<#@ Assembly Name="EnvDTE100"                                             #>
+<#@ Assembly Name="EnvDTE80"                                              #>
+<#@ Assembly Name="EnvDTE90"                                              #>
+<#@ Assembly Name="EnvDTE90a"                                             #>
+<#@ Assembly Name="Microsoft.VisualStudio.TextTemplating.12.0"            #>
+<#@ Assembly Name="Microsoft.VisualStudio.TextTemplating.Interfaces.10.0" #>
+<#@ Assembly Name="Microsoft.VisualStudio.TextTemplating.Interfaces.11.0" #>
+<#@ Import Namespace="System.CodeDom.Compiler" #>
+<#@ Import Namespace="System.Reflection" #>
+<#
+var sp = (IServiceProvider) Host;
+var dte = (EnvDTE80.DTE2) sp.GetService(typeof(EnvDTE.DTE));
+if (dte == null) { throw new System.Exception("Template could not get the dte instance!"); }
+var projItem = dte.Solution.FindProjectItem(Host.TemplateFile);
+var proj = projItem.ContainingProject;
+var projName = proj.Name;
+#>
+<#= projName #>

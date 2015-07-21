@@ -1,0 +1,9 @@
+﻿<#@ Template Debug="False" Hostspecific="True" Language="C#" #>
+<#@ Output Extension=".txt" #>
+<#@ Import Namespace="System.CodeDom.Compiler" #>
+<#@ Import Namespace="System.Reflection" #>
+<#
+var sp = (IServiceProvider) Host;
+var output = string.Format("Some simple string format with {0}", "this");
+#>
+<#= output #>
