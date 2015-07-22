@@ -19,7 +19,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     {
         public const string DefaultFileExtension = ".txt";
         private const string FileProtocol = "file:///";
-        private static readonly TraceSource Source = new TraceSource("AIT.Tools.TransformVisualStudioTextTemplates");
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         private readonly string _templateFile;
         private readonly string _templateDir;

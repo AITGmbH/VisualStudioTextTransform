@@ -68,6 +68,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="TestEnv.cs" />
+    <Compile Include="IntegrationTest.cs" />
     <None Include="TestTemplates\TargetDir.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TargetDir.txt</LastGenOutput>
@@ -94,13 +96,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="Properties\Resources.tt.cs">
-      <DependentUpon>Resources.tt</DependentUpon>
-    </None>
-    <None Include="Properties\Resources.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Resources.txt</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -110,11 +105,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SolutionDir.txt</LastGenOutput>
     </None>
-    <Content Include="Properties\Resources.txt">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.tt</DependentUpon>
-    </Content>
     <Content Include="TestTemplates\SolutionDir.txt">
       <DependentUpon>SolutionDir.tt</DependentUpon>
       <AutoGen>True</AutoGen>

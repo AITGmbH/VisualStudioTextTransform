@@ -5,16 +5,83 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
 using AIT.Tools.VisualStudioTextTransform.Properties;
-using Microsoft.VisualStudio.TextTemplating;
+using EnvDTE80;
+using Engine = Microsoft.VisualStudio.TextTemplating.Engine;
 
 namespace AIT.Tools.VisualStudioTextTransform
 {
     public static class Program
     {
-        private static readonly TraceSource Source = new TraceSource("AIT.Tools.TransformVisualStudioTextTemplates");
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
-        public static Tuple<string, VisualStudioTextTemplateHost> ProcessTemplateInMemory(EnvDTE80.DTE2 dte, string templateFileName)
+        // From http://www.viva64.com/en/b/0169/
+        public static DTE2 GetById(int ID)
+        {
+            //rot entry for visual studio running under current process.
+            string rotEntry = String.Format(CultureInfo.InvariantCulture, "!VisualStudio.DTE.12.0:{0}", ID);
+            IRunningObjectTable rot;
+            NativeMethods.GetRunningObjectTable(0, out rot);
+            IEnumMoniker enumMoniker;
+            rot.EnumRunning(out enumMoniker);
+            enumMoniker.Reset();
+            IntPtr fetched = IntPtr.Zero;
+            IMoniker[] moniker = new IMoniker[1];
+            while (enumMoniker.Next(1, moniker, fetched) == 0)
+            {
+                IBindCtx bindCtx;
+                NativeMethods.CreateBindCtx(0, out bindCtx);
+                string displayName;
+                moniker[0].GetDisplayName(bindCtx, null, out displayName);
+                if (displayName == rotEntry)
+                {
+                    object comObject;
+                    var result = rot.GetObject(moniker[0], out comObject);
+                    Marshal.ThrowExceptionForHR(result);
+                    return (DTE2)comObject;
+                }
+            }
+            return null;
+        }
+
+        public static Tuple<int, DTE2> CreateDteInstance()
+        {
+            // We Create our own instance for customized logging + killing afterwards
+            var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            var pfx64 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            var vs2013Relative = Path.Combine("Microsoft Visual Studio 12.0", "Common7", "IDE", "devenv.exe");
+            var testPaths = new[]
+            {
+                Path.Combine(pf, vs2013Relative),
+                Path.Combine(pfx64, vs2013Relative)
+            };
+            var devenvExe = testPaths.FirstOrDefault(File.Exists);
+            if (String.IsNullOrEmpty(devenvExe))
+            {
+                Source.TraceEvent(TraceEventType.Error, 0, "Could not find devenv.exe, falling back to COM.");
+                var dteType = Type.GetTypeFromProgID("VisualStudio.DTE.12.0", true);
+                return Tuple.Create(-1, (DTE2)Activator.CreateInstance(dteType, true));
+            }
+            using (var start = 
+                Process.Start(
+                    devenvExe, 
+                    string.Format(CultureInfo.InvariantCulture, "-Embedding /log \"{0}\"", 
+                        Path.GetFullPath(Settings.Default.VisualStudioLogfile))))
+            {
+                Thread.Sleep(10000);
+                var dte = GetById(start.Id);
+                if (dte == null)
+                {
+                    throw new InvalidOperationException("Could not get DTE instance from process!");
+                }
+                return Tuple.Create(start.Id, dte);
+            }
+        }
+
+        public static Tuple<string, VisualStudioTextTemplateHost> ProcessTemplateInMemory(DTE2 dte, string templateFileName)
         {
             if (dte == null)
             {
@@ -73,7 +140,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
         }
 
-        public static CompilerErrorCollection ProcessTemplate(EnvDTE80.DTE2 dte, string templateFileName)
+        public static CompilerErrorCollection ProcessTemplate(DTE2 dte, string templateFileName)
         {
             var templateDir = Path.GetDirectoryName(templateFileName);
             var result = ProcessTemplateInMemory(dte, templateFileName);
@@ -104,11 +171,11 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         [STAThread]
-        public static int Main(string[] argv)
+        public static int Main(string[] arguments)
         {
             try
             {
-                return ExecuteMain(argv);
+                return ExecuteMain(arguments);
             }
             catch (Exception e)
             {
@@ -117,13 +184,13 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
         }
 
-        private static int ExecuteMain(string[] argv)
+        private static int ExecuteMain(string[] arguments)
         {
-            if (argv.Length == 0)
+            if (arguments.Length == 0)
             {
                 throw new ArgumentException(Resources.Program_Main_you_must_provide_a_solution_file);
             }
-            var solutionFileName = argv[0];
+            var solutionFileName = arguments[0];
             if (string.IsNullOrEmpty(solutionFileName) || !File.Exists(solutionFileName))
             {
                 throw new ArgumentException(
@@ -135,8 +202,9 @@ namespace AIT.Tools.VisualStudioTextTransform
             Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Creating_VS_instance___);
             using (new MessageFilter())
             {
-                var dteType = Type.GetTypeFromProgID("VisualStudio.DTE.12.0", true);
-                var dte = (EnvDTE80.DTE2) Activator.CreateInstance(dteType, true);
+                var result = CreateDteInstance();
+                var dte = result.Item2;
+                var processId = result.Item1;
                 try
                 {
                     Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Opening__0_, solutionFileName);
@@ -164,7 +232,13 @@ namespace AIT.Tools.VisualStudioTextTransform
                 }
                 finally
                 {
+                    var process = Process.GetProcessById(processId);
                     dte.Quit();
+                    Thread.Sleep(10000);
+                    if (!process.HasExited)
+                    {
+                        process.Kill();
+                    }
                 }
             }
         }
