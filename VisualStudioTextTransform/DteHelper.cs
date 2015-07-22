@@ -55,6 +55,11 @@ namespace AIT.Tools.VisualStudioTextTransform
 
         public static Tuple<int, DTE2> CreateDteInstance()
         {
+            if (!Settings.Default.SelfHostVisualStudio)
+            {
+                _source.TraceEvent(TraceEventType.Warning, 0, "Selfhosting is disabled");
+                return CreateDteInstanceWithActivator();
+            }
             // We Create our own instance for customized logging + killing afterwards
             var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var pfx64 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
