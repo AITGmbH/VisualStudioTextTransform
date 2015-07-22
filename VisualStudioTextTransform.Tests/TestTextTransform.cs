@@ -83,5 +83,12 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         {
             TestExecutionByName("SolutionDir.tt", HelperClass.GetResult());
         }
+
+        [TestMethod]
+        public void TestSomeVeryLargePath()
+        {
+            TestExecutionByName(Path.Combine("SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_VERY_LONG_PATH_NAME", "VeryLongPath.tt"),
+                "Some example data");
+        }
     }
 }

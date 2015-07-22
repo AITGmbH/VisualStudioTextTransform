@@ -75,12 +75,23 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 return _templateDir;
             }
+
+            var combinedPath = Path.Combine(_templateDir, path);
+            string relativePath = null;
+            try
+            {
+                relativePath = Path.GetDirectoryName(combinedPath);
+            }
+            catch (PathTooLongException)
+            {
+                _source.TraceEvent(TraceEventType.Error, 0, "Path \"{0}\" is to long and has been ignored.", combinedPath);
+            }
             var paths = new[]
             {
                 // First check if we have a full path here
                 path,
                 // check relative to template file
-                Path.GetDirectoryName(Path.Combine(_templateDir, path))
+                relativePath
                 // TODO: Add more (GAC?, configured by CLI?)
             };
             _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);

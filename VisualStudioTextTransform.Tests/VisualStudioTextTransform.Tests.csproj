@@ -105,6 +105,15 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SolutionDir.txt</LastGenOutput>
     </None>
+    <None Include="TestTemplates\SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_VERY_LONG_PATH_NAME\VeryLongPath.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VeryLongPath.txt</LastGenOutput>
+    </None>
+    <Content Include="TestTemplates\SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_SOME_VERY_LONG_PATH_NAME\VeryLongPath.txt">
+      <DependentUpon>VeryLongPath.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Content>
     <Content Include="TestTemplates\SolutionDir.txt">
       <DependentUpon>SolutionDir.tt</DependentUpon>
       <AutoGen>True</AutoGen>

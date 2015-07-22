@@ -1,0 +1,6 @@
+﻿<#@ Template Debug="False" Hostspecific="True" Language="C#" #>
+<#@ Output Extension=".txt" #>
+<#@ Assembly Name="Microsoft.VisualStudio.TextTemplating.Interfaces.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" #>
+<#@ Import Namespace="System.CodeDom.Compiler" #>
+<#@ Import Namespace="System.Reflection" #>
+<#= "Some example data" #>
