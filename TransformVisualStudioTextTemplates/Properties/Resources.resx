@@ -177,4 +177,7 @@
   <data name="VisualStudioTextTemplateHost_GetService_Returning_DTE_instance_" xml:space="preserve">
     <value>Returning DTE instance.</value>
   </data>
+  <data name="Program_ProcessTemplateInMemory_String_is_null_or_empty_or_file_doesn_t_exist_" xml:space="preserve">
+    <value>String is null or empty or file doesn't exist.</value>
+  </data>
 </root>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
     {
         public const string DefaultFileExtension = ".txt";
         private const string FileProtocol = "file:///";
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.TransformVisualStudioTextTemplates");
 
         private readonly string _templateFile;
         private readonly string _templateDir;
@@ -25,7 +27,6 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
         private CompilerErrorCollection _errors;
         private string _fileExtension = DefaultFileExtension;
         private Encoding _outputEncoding = Encoding.UTF8;
-
         public VisualStudioTextTemplateHost(string templateFile, DTE2 dte)
         {
             if (templateFile == null)
@@ -55,6 +56,7 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
                 .Properties.Item("OutputPath").Value.ToString();
             return path
                 .Replace("$(ProjectDir)", projectDir + Path.DirectorySeparatorChar)
+                .Replace("$(SolutionDir)", Path.GetDirectoryName(_dte.Solution.FullName) + Path.DirectorySeparatorChar)
                 .Replace("$(TargetDir)", Path.Combine(projectDir, outDir + Path.DirectorySeparatorChar));
         }
 
@@ -73,13 +75,13 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
                 Path.GetDirectoryName(Path.Combine(_templateDir, path))
                 // TODO: Add more (GAC?, configured by CLI?)
             };
-            Console.WriteLine(Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
+            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
 
             var result = paths.FirstOrDefault(File.Exists);
             if (result != null)
             {
                 result = Path.GetFullPath(result);
-                Console.WriteLine(Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_found__0_, result);
+                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_found__0_, result);
                 return result;
             }
             return path;
@@ -193,7 +195,7 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
             }
             catch (Exception e)
             {
-                Console.WriteLine(Resources.VisualStudioTextTemplateHost_ResolveAssemblyReference_Error__Could_not_load_Assembly___0_, e);
+                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolveAssemblyReference_Error__Could_not_load_Assembly___0_, e);
                 return assemblyReference;
             }
         }
@@ -282,10 +284,10 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
 
         public object GetService(Type serviceType)
         {
-            Console.WriteLine(Resources.VisualStudioTextTemplateHost_GetService_Service_request_of_type___0_, serviceType);
+            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Service_request_of_type___0_, serviceType);
             if (serviceType == typeof (DTE) || serviceType == typeof (DTE2))
             {
-                Console.WriteLine(Resources.VisualStudioTextTemplateHost_GetService_Returning_DTE_instance_);
+                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Returning_DTE_instance_);
                 return _dte;
             }
 

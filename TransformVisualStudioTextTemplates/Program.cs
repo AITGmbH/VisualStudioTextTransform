@@ -12,14 +12,24 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
 {
     public static class Program
     {
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.TransformVisualStudioTextTemplates");
+
         public static Tuple<string, VisualStudioTextTemplateHost> ProcessTemplateInMemory(EnvDTE80.DTE2 dte, string templateFileName)
         {
-            
+            if (dte == null)
+            {
+                throw new ArgumentNullException("dte");
+            }
+            if (string.IsNullOrEmpty(templateFileName) || !File.Exists(templateFileName))
+            {
+                throw new ArgumentException(Resources.Program_ProcessTemplateInMemory_String_is_null_or_empty_or_file_doesn_t_exist_, templateFileName);
+            }
+
             //// This would be WAY morer elegant, but it spawns a confirmation box...
             ////printfn "Transforming templates..."
             ////dte.ExecuteCommand("TextTransformation.TransformAllTemplates")
 
-            Console.WriteLine(Resources.Program_ProcessTemplate_Processing___0_____, templateFileName);
+            Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_ProcessTemplate_Processing___0_____, templateFileName);
 
             var templateDir = Path.GetDirectoryName(templateFileName);
             //  Setup Environment
@@ -108,17 +118,17 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
             }
 
             solutionFileName = Path.GetFullPath(solutionFileName);
-            Console.WriteLine(Resources.Program_Main_Creating_VS_instance___);
+            Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Creating_VS_instance___);
             using (new MessageFilter())
             {
                 var dteType = Type.GetTypeFromProgID("VisualStudio.DTE.12.0", true);
                 var dte = (EnvDTE80.DTE2) Activator.CreateInstance(dteType, true);
                 try
                 {
-                    Console.WriteLine(Resources.Program_Main_Opening__0_, solutionFileName);
+                    Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Opening__0_, solutionFileName);
                     dte.Solution.Open(solutionFileName);
 
-                    Console.WriteLine(Resources.Program_Main_Finding_and_processing___tt_templates___);
+                    Source.TraceEvent(TraceEventType.Verbose, 0, Resources.Program_Main_Finding_and_processing___tt_templates___);
                     var firstError =
                         FindTemplates(Path.GetDirectoryName(solutionFileName))
                             .Select(t => Tuple.Create(t, ProcessTemplate(dte, t)))
@@ -126,15 +136,15 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
 
                     if (firstError != null)
                     {
-                        Console.WriteLine(Resources.Program_Main_FAILED_to_process___0__, firstError.Item1);
+                        Source.TraceEvent(TraceEventType.Warning, 0, Resources.Program_Main_FAILED_to_process___0__, firstError.Item1);
                         foreach (var error in firstError.Item2)
                         {
-                            Console.WriteLine(Resources.Program_Main_, error);
+                            Source.TraceEvent(TraceEventType.Error, 0, Resources.Program_Main_, error);
                         }
                         return 1;
                     }
 
-                    Console.WriteLine(Resources.Program_Main_Everything_worked_);
+                    Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Everything_worked_);
                     return 0;
                 }
                 finally

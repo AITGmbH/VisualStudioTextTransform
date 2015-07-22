@@ -106,6 +106,20 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="TestTemplates\SolutionDir.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SolutionDir.txt</LastGenOutput>
+    </None>
+    <Content Include="Properties\Resources.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.tt</DependentUpon>
+    </Content>
+    <Content Include="TestTemplates\SolutionDir.txt">
+      <DependentUpon>SolutionDir.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Content>
     <Content Include="TestTemplates\TargetDir.txt">
       <DependentUpon>TargetDir.tt</DependentUpon>
       <AutoGen>True</AutoGen>

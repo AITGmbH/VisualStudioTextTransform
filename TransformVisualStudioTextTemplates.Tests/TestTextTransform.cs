@@ -87,5 +87,10 @@ namespace AIT.TransformVisualStudioTextTemplates.Tests
         {
             TestExecutionByName("TargetDir.tt", HelperClass.GetResult());
         }
+        [TestMethod]
+        public void TestSolutionDir()
+        {
+            TestExecutionByName("SolutionDir.tt", HelperClass.GetResult());
+        }
     }
 }
