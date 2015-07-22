@@ -19,7 +19,7 @@ using System.Resources;
 
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("AIT GmbH & Co. KG")]
-[assembly: AssemblyProduct("AIT.Tools.TransformVisualStudioTextTemplates")]
+[assembly: AssemblyProduct("AIT.Tools.VisualStudioTextTransform")]
 [assembly: AssemblyCopyright("Copyright © 2011, AIT GmbH & Co. KG")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

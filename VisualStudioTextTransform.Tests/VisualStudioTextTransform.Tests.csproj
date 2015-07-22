@@ -6,8 +6,8 @@
     <ProjectGuid>{0AF620C1-0128-4D48-9E27-E9162BC1D836}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AIT.TransformVisualStudioTextTemplates.Tests</RootNamespace>
-    <AssemblyName>AIT.TransformVisualStudioTextTemplates.Tests</AssemblyName>
+    <RootNamespace>AIT.Tools.VisualStudioTextTransform.Tests</RootNamespace>
+    <AssemblyName>AIT.Tools.VisualStudioTextTransform.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -142,9 +142,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TransformVisualStudioTextTemplates\TransformVisualStudioTextTemplates.csproj">
-      <Project>{48F77B98-1250-4FEE-AC8F-208821C8B5BE}</Project>
-      <Name>TransformVisualStudioTextTemplates</Name>
+    <ProjectReference Include="..\VisualStudioTextTransform\VisualStudioTextTransform.csproj">
+      <Project>{48f77b98-1250-4fee-ac8f-208821c8b5be}</Project>
+      <Name>VisualStudioTextTransform</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

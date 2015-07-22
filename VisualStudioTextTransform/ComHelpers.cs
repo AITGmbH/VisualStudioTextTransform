@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-namespace AIT.Tools.TransformVisualStudioTextTemplates
+namespace AIT.Tools.VisualStudioTextTransform
 {
     // Fix COM retry errors: http://www.viva64.com/en/b/0169/
     [ComImport]

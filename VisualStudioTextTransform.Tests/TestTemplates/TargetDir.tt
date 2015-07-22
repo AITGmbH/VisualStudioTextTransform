@@ -1,7 +1,7 @@
 ﻿<#@ Template Debug="False" Hostspecific="True" Language="C#" #>
 <#@ Output Extension=".txt" #>
-<#@ Assembly Name="$(TargetDir)AIT.TransformVisualStudioTextTemplates.Tests.dll" #>
+<#@ Assembly Name="$(TargetDir)AIT.Tools.VisualStudioTextTransform.Tests.dll" #>
 <#@ Import Namespace="System.CodeDom.Compiler" #>
 <#@ Import Namespace="System.Reflection" #>
-<#@ Import Namespace="AIT.TransformVisualStudioTextTemplates.Tests" #>
+<#@ Import Namespace="AIT.Tools.VisualStudioTextTransform.Tests" #>
 <#= HelperClass.GetResult() #>

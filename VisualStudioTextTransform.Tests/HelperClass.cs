@@ -1,4 +1,4 @@
-﻿namespace AIT.TransformVisualStudioTextTemplates.Tests
+﻿namespace AIT.Tools.VisualStudioTextTransform.Tests
 {
     public class HelperClass
     {

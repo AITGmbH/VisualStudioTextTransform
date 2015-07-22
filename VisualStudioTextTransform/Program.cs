@@ -5,10 +5,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using AIT.Tools.TransformVisualStudioTextTemplates.Properties;
+using AIT.Tools.VisualStudioTextTransform.Properties;
 using Microsoft.VisualStudio.TextTemplating;
 
-namespace AIT.Tools.TransformVisualStudioTextTemplates
+namespace AIT.Tools.VisualStudioTextTransform
 {
     public static class Program
     {

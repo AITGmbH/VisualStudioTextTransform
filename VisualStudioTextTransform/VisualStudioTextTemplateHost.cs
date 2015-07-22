@@ -7,12 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using AIT.Tools.TransformVisualStudioTextTemplates.Properties;
+using AIT.Tools.VisualStudioTextTransform.Properties;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.TextTemplating;
 
-namespace AIT.Tools.TransformVisualStudioTextTemplates
+namespace AIT.Tools.VisualStudioTextTransform
 {
     /// See https://msdn.microsoft.com/en-us/library/bb126579.aspx for more details
     public class VisualStudioTextTemplateHost : ITextTemplatingEngineHost, IServiceProvider

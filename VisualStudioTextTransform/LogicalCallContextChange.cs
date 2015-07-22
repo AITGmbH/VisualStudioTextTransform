@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Remoting.Messaging;
 
-namespace AIT.Tools.TransformVisualStudioTextTemplates
+namespace AIT.Tools.VisualStudioTextTransform
 {
     public class LogicalCallContextChange : IDisposable
     {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using AIT.Tools.TransformVisualStudioTextTemplates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace AIT.TransformVisualStudioTextTemplates.Tests
+namespace AIT.Tools.VisualStudioTextTransform.Tests
 {
 
     [TestClass]
@@ -28,7 +26,7 @@ namespace AIT.TransformVisualStudioTextTemplates.Tests
             _binDir = Path.GetDirectoryName(_debugDir);
             _testProjectDir = Path.GetDirectoryName(_binDir);
             _solutionDir = Path.GetDirectoryName(_testProjectDir);
-            var solutionFile = Path.GetFullPath(Path.Combine(_solutionDir, "TransformVisualStudioTextTemplates.sln"));
+            var solutionFile = Path.GetFullPath(Path.Combine(_solutionDir, "VisualStudioTextTransform.sln"));
             _dte.Solution.Open(solutionFile);
         }
 
@@ -67,7 +65,7 @@ namespace AIT.TransformVisualStudioTextTemplates.Tests
         [TestMethod]
         public void TestVisualStudioExample()
         {
-            TestExecutionByName("VisualStudioExample.tt", "TransformVisualStudioTextTemplates.Tests");
+            TestExecutionByName("VisualStudioExample.tt", "VisualStudioTextTransform.Tests");
         }
 
         [TestMethod]
