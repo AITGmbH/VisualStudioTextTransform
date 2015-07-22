@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="AIT" ToolsVersion="10.0">
+<RuleSet Name="AIT Default Rules" ToolsVersion="12.0">
   <Include Path="allrules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1020" Action="None" />
     <Rule Id="CA1707" Action="None" />
     <Rule Id="CA1709" Action="None" />
+    <Rule Id="CA2225" Action="None" />
   </Rules>
 </RuleSet>

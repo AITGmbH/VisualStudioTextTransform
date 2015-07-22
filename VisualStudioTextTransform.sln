@@ -14,6 +14,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualStudioTextTransform.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualStudioTextTransform", "VisualStudioTextTransform\VisualStudioTextTransform.csproj", "{48F77B98-1250-4FEE-AC8F-208821C8B5BE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Settings", ".Settings", "{46DDFFDD-F421-47AF-B91B-1DF17E5EF867}"
+	ProjectSection(SolutionItems) = preProject
+		AIT.CodeAnalysisDictionary.xml = AIT.CodeAnalysisDictionary.xml
+		AIT.ruleset = AIT.ruleset
+		Dummy.snk = Dummy.snk
+		Settings.StyleCop = Settings.StyleCop
+		VisualStudioTextTransform.sln.DotSettings = VisualStudioTextTransform.sln.DotSettings
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
