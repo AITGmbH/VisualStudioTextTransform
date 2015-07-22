@@ -68,6 +68,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <None Include="TestTemplates\TargetDir.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TargetDir.txt</LastGenOutput>
+    </None>
     <None Include="TestTemplates\SimpleExample.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SimpleExample.txt</LastGenOutput>
@@ -76,6 +80,11 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>VisualStudioExample.txt</LastGenOutput>
     </None>
+    <None Include="TestTemplates\ExternalDependency.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ExternalDependency.txt</LastGenOutput>
+    </None>
+    <Compile Include="HelperClass.cs" />
     <Compile Include="TestTextTransform.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +106,16 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestTemplates\TargetDir.txt">
+      <DependentUpon>TargetDir.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Content>
+    <Content Include="TestTemplates\ExternalDependency.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExternalDependency.tt</DependentUpon>
+    </Content>
     <Content Include="TestTemplates\SimpleExample.txt">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

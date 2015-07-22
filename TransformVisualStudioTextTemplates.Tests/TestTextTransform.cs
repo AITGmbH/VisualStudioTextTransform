@@ -73,19 +73,19 @@ namespace AIT.TransformVisualStudioTextTemplates.Tests
         [TestMethod]
         public void TestExternalDependency()
         {
-            Assert.Fail("Add a test-case which loads a custom assembly");
+            TestExecutionByName("ExternalDependency.tt", HelperClass.GetResult());
         }
 
         [TestMethod]
         public void TestProjectDir()
         {
-            Assert.Fail("Add a test-case which uses $(ProjectDir)");
+            Console.WriteLine("Tested as part of ExternalDependency.tt");
         }
 
         [TestMethod]
         public void TestTargetDir()
         {
-            Assert.Fail("Add a test-case which uses $(TargetDir)");
+            TestExecutionByName("TargetDir.tt", HelperClass.GetResult());
         }
     }
 }
