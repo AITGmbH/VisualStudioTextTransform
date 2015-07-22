@@ -24,12 +24,14 @@ namespace AIT.Tools.VisualStudioTextTransform
                 Justification = "Names given by a foraign API"),
              SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly",
                 Justification = "Names given by a foreign API"), PreserveSig]
+            // ReSharper disable once InconsistentNaming
             int RetryRejectedCall(IntPtr threadIDCallee, int dwTickCount, int dwRejectType);
 
             [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly",
                 Justification = "Names given by a foraign API"),
              SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly",
                 Justification = "Names given by a foreign API"), PreserveSig]
+            // ReSharper disable once InconsistentNaming
             int MessagePending(IntPtr threadIDCallee, int dwTickCount, int dwPendingType);
         }
 

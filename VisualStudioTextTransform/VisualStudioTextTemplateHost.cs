@@ -21,7 +21,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     {
         private const string DefaultFileExtension = ".txt";
         private const string FileProtocol = "file:///";
-        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+        private static readonly TraceSource _source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         private readonly string _templateFile;
         private readonly string _templateDir;
@@ -83,13 +83,13 @@ namespace AIT.Tools.VisualStudioTextTransform
                 Path.GetDirectoryName(Path.Combine(_templateDir, path))
                 // TODO: Add more (GAC?, configured by CLI?)
             };
-            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
+            _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
 
             var result = paths.FirstOrDefault(File.Exists);
             if (result != null)
             {
                 result = Path.GetFullPath(result);
-                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_found__0_, result);
+                _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_found__0_, result);
                 return result;
             }
             return path;
@@ -224,7 +224,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
             catch (Exception e)
             {
-                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolveAssemblyReference_Error__Could_not_load_Assembly___0_, e);
+                _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolveAssemblyReference_Error__Could_not_load_Assembly___0_, e);
                 return assemblyReference;
             }
         }
@@ -341,10 +341,10 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <returns></returns>
         public object GetService(Type serviceType)
         {
-            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Service_request_of_type___0_, serviceType);
+            _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Service_request_of_type___0_, serviceType);
             if (serviceType == typeof (DTE) || serviceType == typeof (DTE2))
             {
-                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Returning_DTE_instance_);
+                _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Returning_DTE_instance_);
                 return _dte;
             }
 
