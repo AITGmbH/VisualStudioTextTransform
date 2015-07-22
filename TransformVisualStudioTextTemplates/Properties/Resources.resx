@@ -180,4 +180,7 @@
   <data name="Program_ProcessTemplateInMemory_String_is_null_or_empty_or_file_doesn_t_exist_" xml:space="preserve">
     <value>String is null or empty or file doesn't exist.</value>
   </data>
+  <data name="Program_Main_Application_crashed_with___0_" xml:space="preserve">
+    <value>Application crashed with: {0}</value>
+  </data>
 </root>

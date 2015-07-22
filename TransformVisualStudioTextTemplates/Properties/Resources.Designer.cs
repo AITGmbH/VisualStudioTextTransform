@@ -70,6 +70,15 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application crashed with: {0}.
+        /// </summary>
+        internal static string Program_Main_Application_crashed_with___0_ {
+            get {
+                return ResourceManager.GetString("Program_Main_Application_crashed_with___0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating VS instance....
         /// </summary>
         internal static string Program_Main_Creating_VS_instance___ {

@@ -106,6 +106,19 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
         [STAThread]
         public static int Main(string[] argv)
         {
+            try
+            {
+                return ExecuteMain(argv);
+            }
+            catch (Exception e)
+            {
+                Source.TraceEvent(TraceEventType.Critical, 1, Resources.Program_Main_Application_crashed_with___0_, e);
+                return 1;
+            }
+        }
+
+        private static int ExecuteMain(string[] argv)
+        {
             if (argv.Length == 0)
             {
                 throw new ArgumentException(Resources.Program_Main_you_must_provide_a_solution_file);
@@ -114,7 +127,8 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
             if (string.IsNullOrEmpty(solutionFileName) || !File.Exists(solutionFileName))
             {
                 throw new ArgumentException(
-                    string.Format(CultureInfo.CurrentUICulture, Resources.Program_Main_the_file_path___0___is_either_invalid_or_doesn_t_exist_, solutionFileName));
+                    string.Format(CultureInfo.CurrentUICulture,
+                        Resources.Program_Main_the_file_path___0___is_either_invalid_or_doesn_t_exist_, solutionFileName));
             }
 
             solutionFileName = Path.GetFullPath(solutionFileName);
@@ -136,7 +150,8 @@ namespace AIT.Tools.TransformVisualStudioTextTemplates
 
                     if (firstError != null)
                     {
-                        Source.TraceEvent(TraceEventType.Warning, 0, Resources.Program_Main_FAILED_to_process___0__, firstError.Item1);
+                        Source.TraceEvent(TraceEventType.Warning, 0, Resources.Program_Main_FAILED_to_process___0__,
+                            firstError.Item1);
                         foreach (var error in firstError.Item2)
                         {
                             Source.TraceEvent(TraceEventType.Error, 0, Resources.Program_Main_, error);
