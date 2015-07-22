@@ -102,6 +102,8 @@ namespace AIT.Tools.VisualStudioTextTransform
             // Because with TFS the files could be read-only!
             if (File.Exists(outFilePath))
             {
+                var attr = File.GetAttributes(outFilePath);
+                File.SetAttributes(outFilePath, attr & ~FileAttributes.ReadOnly);
                 File.Delete(outFilePath);
             }
             File.WriteAllText(outFilePath, output, host.FileEncoding);
