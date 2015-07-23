@@ -248,7 +248,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 // - Specifying the GAC directories directly -> bad
                 var ass = Assembly.LoadWithPartialName(assemblyReference);
 
-                if (ass != null && string.IsNullOrEmpty(ass.Location))
+                if (ass != null && !string.IsNullOrEmpty(ass.Location))
                 {
                     Source.TraceEvent(TraceEventType.Verbose, 0, "Could resolve the given string to an assembly: {0}", ass.Location);
                     return ass.Location;
