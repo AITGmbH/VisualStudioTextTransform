@@ -1,18 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6296E701-29FF-49C0-A460-6770D7C2B318}"
 	ProjectSection(SolutionItems) = preProject
 		AIT.ruleset = AIT.ruleset
 		CodeAnalysisDictionary.xml = CodeAnalysisDictionary.xml
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualStudioTextTransform.Tests", "VisualStudioTextTransform.Tests\VisualStudioTextTransform.Tests.csproj", "{0AF620C1-0128-4D48-9E27-E9162BC1D836}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualStudioTextTransform", "VisualStudioTextTransform\VisualStudioTextTransform.csproj", "{48F77B98-1250-4FEE-AC8F-208821C8B5BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Settings", ".Settings", "{46DDFFDD-F421-47AF-B91B-1DF17E5EF867}"
+	ProjectSection(SolutionItems) = preProject
+		AIT.CodeAnalysisDictionary.xml = AIT.CodeAnalysisDictionary.xml
+		AIT.ruleset = AIT.ruleset
+		Dummy.snk = Dummy.snk
+		Settings.StyleCop = Settings.StyleCop
+		VisualStudioTextTransform.sln.DotSettings = VisualStudioTextTransform.sln.DotSettings
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

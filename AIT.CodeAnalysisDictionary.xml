@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Dictionary>
+  <Words>
+    <Recognized>
+      <Word>Aggregator</Word>
+      <Word>Tfs</Word>
+      <Word>Args</Word>
+      <Word>Uri</Word>
+      <Word>Contravis</Word>
+      <Word>dte</Word>
+      <Word>dir</Word>
+    </Recognized>
+  </Words>
+  <Acronyms>
+    <Acronym>XXX</Acronym>
+    <CasingExceptions>
+      <Acronym>MEF</Acronym>
+      <Acronym>LTI</Acronym>
+      <Acronym>DTE</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>
