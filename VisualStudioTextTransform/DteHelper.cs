@@ -11,6 +11,9 @@ using EnvDTE80;
 
 namespace AIT.Tools.VisualStudioTextTransform
 {
+    /// <summary>
+    /// Helper class to fetch DTE instances.
+    /// </summary>
     public static class DteHelper
     {
 
@@ -24,7 +27,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         internal static DTE2 GetById(int id)
         {
             //rot entry for visual studio running under current process.
-            string rotEntry = String.Format(CultureInfo.InvariantCulture, "!VisualStudio.DTE.12.0:{0}", id);
+            var rotEntry = string.Format(CultureInfo.InvariantCulture, "!VisualStudio.DTE.12.0:{0}", id);
             IRunningObjectTable rot;
             NativeMethods.GetRunningObjectTable(0, out rot);
             IEnumMoniker enumMoniker;
@@ -55,11 +58,11 @@ namespace AIT.Tools.VisualStudioTextTransform
         
         /// <summary>
         /// Tries to create a DTE instance.
-        /// First it tries to start a new Visual Studio instance and to grep the DTE instance.
+        /// First it tries to start a new Visual Studio instance and to fetch the DTE instance.
         /// If that fails we fall back to creating the Instance via Activator.CreateInstance.
         /// If possible we return the process-Id of the Visual Studio instance (or -1 otherwise).
         /// 
-        /// If something goes wrong no process is opened (ie. this method cleans up the opened process) otherwise
+        /// If something goes wrong no process is opened (i.e. this method cleans up the opened process) otherwise
         /// the caller needs to take care about closing the Visual Studio instance.
         /// </summary>
         /// <returns></returns>
@@ -80,7 +83,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 Path.Combine(pfx64, vs2013Relative)
             };
             var devenvExe = testPaths.FirstOrDefault(File.Exists);
-            if (String.IsNullOrEmpty(devenvExe))
+            if (string.IsNullOrEmpty(devenvExe))
             {
                 Source.TraceEvent(TraceEventType.Error, 0, "Could not find devenv.exe, falling back to COM.");
                 return CreateDteInstanceWithActivator();
@@ -88,7 +91,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             using (var start =
                 Process.Start(
                     devenvExe,
-                    String.Format(CultureInfo.InvariantCulture, "-Embedding /log \"{0}\"",
+                    string.Format(CultureInfo.InvariantCulture, "-Embedding /log \"{0}\"",
                         Path.GetFullPath(Settings.Default.VisualStudioLogfile))))
             {
                 if (start == null)
