@@ -24,8 +24,9 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// </summary>
         /// <param name="dte"></param>
         /// <param name="templateFileName"></param>
+        /// <param name="resolver"></param>
         /// <returns></returns>
-        public static Tuple<string, VisualStudioTextTemplateHost> ProcessTemplateInMemory(DTE2 dte, string templateFileName)
+        public static Tuple<string, VisualStudioTextTemplateHost> ProcessTemplateInMemory(DTE2 dte, string templateFileName, IVariableResolver resolver)
         {
             if (dte == null)
             {
@@ -36,7 +37,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 throw new ArgumentException(Resources.Program_ProcessTemplateInMemory_String_is_null_or_empty_or_file_doesn_t_exist_, templateFileName);
             }
 
-            //// This would be WAY morer elegant, but it spawns a confirmation box...
+            //// This would be WAY more elegant, but it spawns a confirmation box...
             ////printfn "Transforming templates..."
             ////dte.ExecuteCommand("TextTransformation.TransformAllTemplates")
 
@@ -71,7 +72,8 @@ namespace AIT.Tools.VisualStudioTextTransform
 
                 using (new LogicalCallContextChange("NamespaceHint", finalNamespace))
                 {
-                    var host = new VisualStudioTextTemplateHost(templateFileName, dte);
+                    
+                    var host = new VisualStudioTextTemplateHost(templateFileName, dte, resolver);
                     var engine = new Engine();
                     var input = File.ReadAllText(templateFileName);
                     var output = engine.ProcessTemplate(input, host);
@@ -89,11 +91,37 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// </summary>
         /// <param name="dte"></param>
         /// <param name="templateFileName"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static CompilerErrorCollection ProcessTemplate(DTE2 dte, string templateFileName)
+        public static CompilerErrorCollection ProcessTemplate(DTE2 dte, string templateFileName, Options options)
         {
+            if (dte == null)
+            {
+                throw new ArgumentNullException("dte");
+            }
+            if (templateFileName == null)
+            {
+                throw new ArgumentNullException("templateFileName");
+            }
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
             var templateDir = Path.GetDirectoryName(templateFileName);
-            var result = ProcessTemplateInMemory(dte, templateFileName);
+            var defaultResolver = DefaultVariableResolver.CreateFromDte(dte, templateFileName);
+            IVariableResolver resolver = defaultResolver;
+            _source.TraceEvent(TraceEventType.Information, 1, "Default TargetDir {0} will be used", defaultResolver.TargetDir);
+            _source.TraceEvent(TraceEventType.Information, 1, "Default SolutionDir {0} will be used", defaultResolver.SolutionDir);
+            _source.TraceEvent(TraceEventType.Information, 1, "Default ProjectDir {0} will be used", defaultResolver.ProjectDir);
+
+            if (!string.IsNullOrEmpty(options.TargetDir) && Directory.Exists(options.TargetDir))
+            {
+                _source.TraceEvent(TraceEventType.Information, 1, "TargetDir {0} will be added ", options.TargetDir);
+                resolver = new CombiningVariableResolver(new DefaultVariableResolver(null, null, options.TargetDir), resolver);
+            }
+
+            var result = ProcessTemplateInMemory(dte, templateFileName, resolver);
             var host = result.Item2;
             var output = result.Item1;
 
@@ -126,8 +154,9 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// /
         /// </summary>
         /// <param name="solutionFileName"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static bool ProcessSolution(string solutionFileName)
+        public static bool ProcessSolution(string solutionFileName, Options options)
         {
             if (string.IsNullOrEmpty(solutionFileName) || !File.Exists(solutionFileName))
             {
@@ -151,7 +180,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                     _source.TraceEvent(TraceEventType.Verbose, 0, Resources.Program_Main_Finding_and_processing___tt_templates___);
                     var firstError =
                         TemplateProcessor.FindTemplates(Path.GetDirectoryName(solutionFileName))
-                            .Select(t => Tuple.Create(t, ProcessTemplate(dte, t)))
+                            .Select(t => Tuple.Create(t, ProcessTemplate(dte, t, options)))
                             .FirstOrDefault(tuple => tuple.Item2.Count > 0);
 
                     if (firstError != null)
@@ -177,7 +206,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                     }
                     dte.Quit();
 
-                    // Makes no sence to wait when the process already exited, or when we have no processId to kill.
+                    // Makes no sense to wait when the process already exited, or when we have no processId to kill.
                     int i = 0;
                     while (i < 10 && process != null && !process.HasExited)
                     {
@@ -192,4 +221,5 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
         }
     }
+    
 }

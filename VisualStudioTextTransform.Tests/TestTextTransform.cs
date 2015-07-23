@@ -43,7 +43,7 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         {
             var itemPath = Path.Combine(_testEnv.TestProjectDir, "TestTemplates", testTemplateName);
             Assert.IsTrue(File.Exists(itemPath));
-            var result = TemplateProcessor.ProcessTemplateInMemory(_dte, itemPath);
+            var result = TemplateProcessor.ProcessTemplateInMemory(_dte, itemPath, DefaultVariableResolver.CreateFromDte(_dte, itemPath));
             Assert.IsFalse(result.Item2.Errors.HasErrors);
             Assert.IsFalse(result.Item2.Errors.Count > 0);
             Assert.AreEqual(expected, result.Item1);

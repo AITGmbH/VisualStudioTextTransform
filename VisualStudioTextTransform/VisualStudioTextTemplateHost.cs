@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,16 +27,18 @@ namespace AIT.Tools.VisualStudioTextTransform
         private readonly string _templateFile;
         private readonly string _templateDir;
         private readonly DTE2 _dte;
+        private readonly IVariableResolver _resolver;
         private CompilerErrorCollection _errors;
         private string _fileExtension = DefaultFileExtension;
         private Encoding _outputEncoding = Encoding.UTF8;
-        
+
         /// <summary>
         /// /
         /// </summary>
         /// <param name="templateFile"></param>
         /// <param name="dte"></param>
-        public VisualStudioTextTemplateHost(string templateFile, DTE2 dte)
+        /// <param name="resolver"></param>
+        public VisualStudioTextTemplateHost(string templateFile, DTE2 dte, IVariableResolver resolver)
         {
             if (templateFile == null)
             {
@@ -46,36 +49,40 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 throw new ArgumentNullException("dte");
             }
+            if (resolver == null)
+            {
+                throw new ArgumentNullException("resolver");
+            }
             _templateFile = templateFile;
             _dte = dte;
+            _resolver = resolver;
             _templateDir = Path.GetFullPath(Path.GetDirectoryName(templateFile));
         }
 
-        private string ReplaceProjectVarsPrivate(string path)
+        private IEnumerable<string> ReplaceProjectVar(string path, string variable)
+        {
+            foreach (var resolvedVariable in _resolver.ResolveVariable(variable))
+            {
+                yield return path.Replace(string.Format(CultureInfo.InvariantCulture, "$({0})", variable), resolvedVariable);
+            }
+        } 
+
+        private IEnumerable<string> ReplaceProjectVarsPrivate(string path)
         {
             if (path.StartsWith(FileProtocol, StringComparison.Ordinal))
             {
                 path = path.Substring(FileProtocol.Length);
             }
-            var templateFileItem = _dte.Solution.FindProjectItem(_templateFile);
-            var project = templateFileItem.ContainingProject;
-            var projectDir = Path.GetDirectoryName(project.FullName);
-            string outDir = project.ConfigurationManager.ActiveConfiguration
-                .Properties.Item("OutputPath").Value.ToString();
-            return path
-                .Replace("$(ProjectDir)", projectDir + Path.DirectorySeparatorChar)
-                .Replace("$(SolutionDir)", Path.GetDirectoryName(_dte.Solution.FullName) + Path.DirectorySeparatorChar)
-                .Replace("$(TargetDir)", Path.Combine(projectDir, outDir + Path.DirectorySeparatorChar));
+
+            return
+                ReplaceProjectVar(path, "ProjectDir")
+                .SelectMany(p => ReplaceProjectVar(p, "SolutionDir"))
+                .SelectMany(p => ReplaceProjectVar(p, "TargetDir"));
         }
 
-        private string ResolvePathPrivate(string path)
-        {
-            path = ReplaceProjectVarsPrivate(path);
-            if (string.IsNullOrEmpty(path))
-            {
-                return _templateDir;
-            }
 
+        private IEnumerable<string> PossibleFullPaths(string path)
+        {
             var combinedPath = Path.Combine(_templateDir, path);
             string relativePath = null;
             try
@@ -86,15 +93,28 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 _source.TraceEvent(TraceEventType.Error, 0, "Path \"{0}\" is to long and has been ignored.", combinedPath);
             }
-            var paths = new[]
-            {
                 // First check if we have a full path here
-                path,
+            yield return path;
                 // check relative to template file
-                relativePath
-                // TODO: Add more (GAC?, configured by CLI?)
-            };
+            if (relativePath != null)
+            {
+                yield return relativePath;
+            }
+            // TODO: Add more (GAC?, configured by CLI?)
+        }
+
+        private string ResolvePathPrivate(string path)
+        {
             _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
+            var possiblePaths = ReplaceProjectVarsPrivate(path);
+
+
+            var paths = possiblePaths.SelectMany(PossibleFullPaths).ToList();
+
+            foreach (var possiblePath in paths)
+            {
+                _source.TraceEvent(TraceEventType.Verbose, 0, "Considering {0}", possiblePath);
+            }
 
             var result = paths.FirstOrDefault(File.Exists);
             if (result != null)
@@ -228,6 +248,7 @@ namespace AIT.Tools.VisualStudioTextTransform
 
                 if (ass != null && ass.Location != null)
                 {
+                    _source.TraceEvent(TraceEventType.Verbose, 0, "Could resolve the given string to an assembly: {0}", ass.Location);
                     return ass.Location;
                 }
 

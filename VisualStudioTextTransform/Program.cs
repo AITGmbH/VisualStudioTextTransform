@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using AIT.Tools.VisualStudioTextTransform.Properties;
+using CommandLine;
 
 namespace AIT.Tools.VisualStudioTextTransform
 {
@@ -37,8 +38,13 @@ namespace AIT.Tools.VisualStudioTextTransform
                 throw new ArgumentException(Resources.Program_Main_you_must_provide_a_solution_file);
             }
             var solutionFileName = arguments[0];
+            var opts = new string[arguments.Length - 1];
+            Array.Copy(arguments, 1, opts, 0, arguments.Length - 1);
+            var options = new Options();
+            Parser.Default.ParseArguments(opts, options);
+
             return 
-                TemplateProcessor.ProcessSolution(solutionFileName) ? 0 : 1;
+                TemplateProcessor.ProcessSolution(solutionFileName, options) ? 0 : 1;
         }
 
     }
