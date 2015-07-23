@@ -1,2 +1,9 @@
 before_build:
   - nuget restore
+  
+artifacts:
+  - path: '**\*.log'
+    name: logfiles
+  - path: '**\*.svclog'
+    name: svclogs
+	
