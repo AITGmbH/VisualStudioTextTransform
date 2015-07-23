@@ -6,4 +6,3 @@ artifacts:
     name: logfiles
   - path: '**\*.svclog'
     name: svclogs
-	
