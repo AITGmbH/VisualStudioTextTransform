@@ -11,7 +11,7 @@ using EnvDTE80;
 
 namespace AIT.Tools.VisualStudioTextTransform
 {
-    internal static class DteHelper
+    public static class DteHelper
     {
 
         /// <summary>
@@ -21,10 +21,10 @@ namespace AIT.Tools.VisualStudioTextTransform
         private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         // From http://www.viva64.com/en/b/0169/
-        public static DTE2 GetById(int id)
+        internal static DTE2 GetById(int id)
         {
             //rot entry for visual studio running under current process.
-            string rotEntry = string.Format(CultureInfo.InvariantCulture, "!VisualStudio.DTE.12.0:{0}", id);
+            string rotEntry = String.Format(CultureInfo.InvariantCulture, "!VisualStudio.DTE.12.0:{0}", id);
             IRunningObjectTable rot;
             NativeMethods.GetRunningObjectTable(0, out rot);
             IEnumMoniker enumMoniker;
@@ -52,7 +52,17 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
             return null;
         }
-
+        
+        /// <summary>
+        /// Tries to create a DTE instance.
+        /// First it tries to start a new Visual Studio instance and to grep the DTE instance.
+        /// If that fails we fall back to creating the Instance via Activator.CreateInstance.
+        /// If possible we return the process-Id of the Visual Studio instance (or -1 otherwise).
+        /// 
+        /// If something goes wrong no process is opened (ie. this method cleans up the opened process) otherwise
+        /// the caller needs to take care about closing the Visual Studio instance.
+        /// </summary>
+        /// <returns></returns>
         public static Tuple<int, DTE2> CreateDteInstance()
         {
             if (!Settings.Default.SelfHostVisualStudio)
@@ -70,7 +80,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 Path.Combine(pfx64, vs2013Relative)
             };
             var devenvExe = testPaths.FirstOrDefault(File.Exists);
-            if (string.IsNullOrEmpty(devenvExe))
+            if (String.IsNullOrEmpty(devenvExe))
             {
                 Source.TraceEvent(TraceEventType.Error, 0, "Could not find devenv.exe, falling back to COM.");
                 return CreateDteInstanceWithActivator();
@@ -78,7 +88,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             using (var start =
                 Process.Start(
                     devenvExe,
-                    string.Format(CultureInfo.InvariantCulture, "-Embedding /log \"{0}\"",
+                    String.Format(CultureInfo.InvariantCulture, "-Embedding /log \"{0}\"",
                         Path.GetFullPath(Settings.Default.VisualStudioLogfile))))
             {
                 if (start == null)
@@ -130,5 +140,36 @@ namespace AIT.Tools.VisualStudioTextTransform
             return Tuple.Create(-1, (DTE2)Activator.CreateInstance(dteType, true));
         }
 
+        /// <summary>
+        /// Cleanup the given DTE instance and kill the process after some timeout.
+        /// </summary>
+        /// <param name="processId"></param>
+        /// <param name="dte"></param>
+        public static void CleanupDteInstance(int processId, DTE2 dte)
+        {
+            if (dte == null)
+            {
+                throw new ArgumentNullException("dte");
+            }
+
+            Process process = null;
+            if (processId > 0)
+            {
+                process = Process.GetProcessById(processId);
+            }
+            dte.Quit();
+
+            // Makes no sense to wait when the process already exited, or when we have no processId to kill.
+            int i = 0;
+            while (i < 10 && process != null && !process.HasExited)
+            {
+                Thread.Sleep(1000);
+                i++;
+            }
+            if (process != null && !process.HasExited)
+            {
+                process.Kill();
+            }
+        }
     }
 }

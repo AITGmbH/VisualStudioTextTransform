@@ -209,24 +209,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 }
                 finally
                 {
-                    Process process = null;
-                    if (processId > 0)
-                    {
-                        process = Process.GetProcessById(processId);
-                    }
-                    dte.Quit();
-
-                    // Makes no sense to wait when the process already exited, or when we have no processId to kill.
-                    int i = 0;
-                    while (i < 10 && process != null && !process.HasExited)
-                    {
-                        Thread.Sleep(1000);
-                        i++;
-                    }
-                    if (process != null && !process.HasExited)
-                    {
-                        process.Kill();
-                    }
+                    DteHelper.CleanupDteInstance(processId, dte);
                 }
             }
         }

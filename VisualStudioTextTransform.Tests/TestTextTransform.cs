@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -9,6 +10,7 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
     public class TestTextTransform
     {
         private static EnvDTE80.DTE2 _dte;
+        private static int _processId;
         private static TestEnv _testEnv;
         private static MessageFilter _msgFilter;
 
@@ -16,8 +18,9 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         public static void ClassInit(TestContext context)
         {
             _msgFilter = new MessageFilter();
-            var dteType = Type.GetTypeFromProgID("VisualStudio.DTE.12.0", true);
-            _dte = (EnvDTE80.DTE2)Activator.CreateInstance(dteType, true);
+            var result = DteHelper.CreateDteInstance();
+            _dte = result.Item2;
+            _processId = result.Item1;
 
             _testEnv = new TestEnv();
             _dte.Solution.Open(_testEnv.SolutionFile);
@@ -26,11 +29,7 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         [ClassCleanup]
         public static void ClassCleanup()
         {
-            if (_dte != null)
-            {
-                _dte.Quit();
-                _dte = null;
-            }
+            DteHelper.CleanupDteInstance(_processId, _dte);
 
             if (_msgFilter != null)
             {
