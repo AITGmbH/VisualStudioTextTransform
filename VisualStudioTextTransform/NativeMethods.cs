@@ -14,21 +14,21 @@ namespace AIT.Tools.VisualStudioTextTransform
         public interface IMessageFilter
         {
             [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly",
-                Justification = "Names given by a foraign API"),
+                Justification = "Names given by a foreign API"),
              SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly",
                 Justification = "Names given by a foreign API"), PreserveSig]
             int HandleInComingCall(int dwCallType, IntPtr threadIdCaller, int dwTickCount, IntPtr lpInterfaceInfo);
 
 
             [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly",
-                Justification = "Names given by a foraign API"),
+                Justification = "Names given by a foreign API"),
              SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly",
                 Justification = "Names given by a foreign API"), PreserveSig]
             // ReSharper disable once InconsistentNaming
             int RetryRejectedCall(IntPtr threadIDCallee, int dwTickCount, int dwRejectType);
 
             [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly",
-                Justification = "Names given by a foraign API"),
+                Justification = "Names given by a foreign API"),
              SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly",
                 Justification = "Names given by a foreign API"), PreserveSig]
             // ReSharper disable once InconsistentNaming
@@ -37,7 +37,7 @@ namespace AIT.Tools.VisualStudioTextTransform
 
         [DllImport("ole32.dll")]
         [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly",
-            Justification = "Names given by a foraign API"),
+            Justification = "Names given by a foreign API"),
          SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly",
              Justification = "Names given by a foreign API"), PreserveSig]
         public static extern int CoRegisterMessageFilter(IMessageFilter lpMessageFilter, out IMessageFilter lplpMessageFilter);

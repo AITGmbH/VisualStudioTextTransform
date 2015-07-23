@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using EnvDTE80;
@@ -83,6 +84,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             var projectDir = Path.GetDirectoryName(project.FullName);
             string outDir = project.ConfigurationManager.ActiveConfiguration
                 .Properties.Item("OutputPath").Value.ToString();
+            Debug.Assert(projectDir != null, "projectDir != null, did not expect project.FullName to be a root directory!");
             var targetDir = Path.Combine(projectDir, outDir);
             return new DefaultVariableResolver(projectDir, Path.GetDirectoryName(dte.Solution.FullName), targetDir);
         }

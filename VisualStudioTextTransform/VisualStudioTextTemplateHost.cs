@@ -22,7 +22,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     {
         private const string DefaultFileExtension = ".txt";
         private const string FileProtocol = "file:///";
-        private static readonly TraceSource _source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         private readonly string _templateFile;
         private readonly string _templateDir;
@@ -40,7 +40,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <param name="resolver"></param>
         public VisualStudioTextTemplateHost(string templateFile, DTE2 dte, IVariableResolver resolver)
         {
-            if (templateFile == null)
+            if (string.IsNullOrEmpty(templateFile))
             {
                 throw new ArgumentNullException("templateFile");
             }
@@ -56,7 +56,9 @@ namespace AIT.Tools.VisualStudioTextTransform
             _templateFile = templateFile;
             _dte = dte;
             _resolver = resolver;
-            _templateDir = Path.GetFullPath(Path.GetDirectoryName(templateFile));
+            var directoryName = Path.GetDirectoryName(templateFile);
+            Debug.Assert(directoryName != null, "directoryName != null, don't expect templateFile to be a root directory!");
+            _templateDir = Path.GetFullPath(directoryName);
         }
 
         private IEnumerable<string> ReplaceProjectVar(string path, string variable)
@@ -91,7 +93,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
             catch (PathTooLongException)
             {
-                _source.TraceEvent(TraceEventType.Error, 0, "Path \"{0}\" is to long and has been ignored.", combinedPath);
+                Source.TraceEvent(TraceEventType.Error, 0, "Path \"{0}\" is to long and has been ignored.", combinedPath);
             }
                 // First check if we have a full path here
             yield return path;
@@ -105,7 +107,7 @@ namespace AIT.Tools.VisualStudioTextTransform
 
         private string ResolvePathPrivate(string path)
         {
-            _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
+            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
             var possiblePaths = ReplaceProjectVarsPrivate(path);
 
 
@@ -113,14 +115,14 @@ namespace AIT.Tools.VisualStudioTextTransform
 
             foreach (var possiblePath in paths)
             {
-                _source.TraceEvent(TraceEventType.Verbose, 0, "Considering {0}", possiblePath);
+                Source.TraceEvent(TraceEventType.Verbose, 0, "Considering {0}", possiblePath);
             }
 
             var result = paths.FirstOrDefault(File.Exists);
             if (result != null)
             {
                 result = Path.GetFullPath(result);
-                _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_found__0_, result);
+                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_found__0_, result);
                 return result;
             }
             return path;
@@ -136,7 +138,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
         
         /// <summary>
-        /// Default Fallback if not specified by the file
+        /// Default fall-back if not specified by the file
         /// </summary>
         public string FileExtension
         {
@@ -242,13 +244,13 @@ namespace AIT.Tools.VisualStudioTextTransform
                 // Well yes it's obsolete, but see http://stackoverflow.com/questions/11659594/load-latest-assembly-version-dynamically-from-gac
                 // for the alternatives 
                 // - use all versions -> not possible here
-                // - PInvoke -> not Xplat
+                // - PInvoke -> bad and not cross plat
                 // - Specifying the GAC directories directly -> bad
                 var ass = Assembly.LoadWithPartialName(assemblyReference);
 
-                if (ass != null && ass.Location != null)
+                if (ass != null && string.IsNullOrEmpty(ass.Location))
                 {
-                    _source.TraceEvent(TraceEventType.Verbose, 0, "Could resolve the given string to an assembly: {0}", ass.Location);
+                    Source.TraceEvent(TraceEventType.Verbose, 0, "Could resolve the given string to an assembly: {0}", ass.Location);
                     return ass.Location;
                 }
 
@@ -256,7 +258,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
             catch (Exception e)
             {
-                _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolveAssemblyReference_Error__Could_not_load_Assembly___0_, e);
+                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolveAssemblyReference_Error__Could_not_load_Assembly___0_, e);
                 return assemblyReference;
             }
         }
@@ -373,10 +375,10 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <returns></returns>
         public object GetService(Type serviceType)
         {
-            _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Service_request_of_type___0_, serviceType);
+            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Service_request_of_type___0_, serviceType);
             if (serviceType == typeof (DTE) || serviceType == typeof (DTE2))
             {
-                _source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Returning_DTE_instance_);
+                Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_GetService_Returning_DTE_instance_);
                 return _dte;
             }
 

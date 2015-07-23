@@ -10,7 +10,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     /// </summary>
     public static class Program
     {
-        private static readonly TraceSource _source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         /// <summary>
         /// /
@@ -26,7 +26,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
             catch (Exception e)
             {
-                _source.TraceEvent(TraceEventType.Critical, 1, Resources.Program_Main_Application_crashed_with___0_, e);
+                Source.TraceEvent(TraceEventType.Critical, 1, Resources.Program_Main_Application_crashed_with___0_, e);
                 return 1;
             }
         }

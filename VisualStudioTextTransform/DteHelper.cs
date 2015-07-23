@@ -18,7 +18,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// /
         /// </summary>
         /// <returns></returns>
-        private static readonly TraceSource _source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         // From http://www.viva64.com/en/b/0169/
         public static DTE2 GetById(int id)
@@ -47,7 +47,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 }
                 else
                 {
-                    _source.TraceEvent(TraceEventType.Information, 0, "Found event with name: {0}", displayName);
+                    Source.TraceEvent(TraceEventType.Information, 0, "Found event with name: {0}", displayName);
                 }
             }
             return null;
@@ -57,7 +57,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         {
             if (!Settings.Default.SelfHostVisualStudio)
             {
-                _source.TraceEvent(TraceEventType.Warning, 0, "Selfhosting is disabled");
+                Source.TraceEvent(TraceEventType.Warning, 0, "Self-hosting is disabled");
                 return CreateDteInstanceWithActivator();
             }
             // We Create our own instance for customized logging + killing afterwards
@@ -72,7 +72,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             var devenvExe = testPaths.FirstOrDefault(File.Exists);
             if (string.IsNullOrEmpty(devenvExe))
             {
-                _source.TraceEvent(TraceEventType.Error, 0, "Could not find devenv.exe, falling back to COM.");
+                Source.TraceEvent(TraceEventType.Error, 0, "Could not find devenv.exe, falling back to COM.");
                 return CreateDteInstanceWithActivator();
             }
             using (var start =
@@ -83,7 +83,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 if (start == null)
                 {
-                    _source.TraceEvent(TraceEventType.Error, 0, "Could not start devenv.exe, falling back to COM.");
+                    Source.TraceEvent(TraceEventType.Error, 0, "Could not start devenv.exe, falling back to COM.");
                     return CreateDteInstanceWithActivator();
                 }
                 try
@@ -95,7 +95,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                     while (dte == null && currentSpan < timeout && !start.HasExited)
                     {
                         Thread.Sleep(waitTime);
-                        _source.TraceInformation("Trying to get DTE instance from process...");
+                        Source.TraceInformation("Trying to get DTE instance from process...");
                         dte = GetById(start.Id);
                         currentSpan += waitTime;
                     }
@@ -105,14 +105,14 @@ namespace AIT.Tools.VisualStudioTextTransform
                         {
                             start.Kill();
                         }
-                        _source.TraceEvent(TraceEventType.Error, 1, "Could not get DTE instance from process!");
+                        Source.TraceEvent(TraceEventType.Error, 1, "Could not get DTE instance from process!");
                         return CreateDteInstanceWithActivator();
                     }
                     return Tuple.Create(start.Id, dte);
                 }
                 catch (Exception e)
                 {
-                    _source.TraceEvent(TraceEventType.Verbose, 0, "Killing devenv.exe because of error while fetching dte instance from process: {0}",
+                    Source.TraceEvent(TraceEventType.Verbose, 0, "Killing devenv.exe because of error while fetching dte instance from process: {0}",
                         e);
                     if (!start.HasExited)
                     {
@@ -125,7 +125,7 @@ namespace AIT.Tools.VisualStudioTextTransform
 
         private static Tuple<int, DTE2> CreateDteInstanceWithActivator()
         {
-            _source.TraceEvent(TraceEventType.Verbose, 1, "Creating devenv instance via COM.");
+            Source.TraceEvent(TraceEventType.Verbose, 1, "Creating Visual Studio (devenv.exe) instance via COM.");
             var dteType = Type.GetTypeFromProgID("VisualStudio.DTE.12.0", true);
             return Tuple.Create(-1, (DTE2)Activator.CreateInstance(dteType, true));
         }

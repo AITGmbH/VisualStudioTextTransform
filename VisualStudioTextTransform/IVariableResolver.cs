@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace AIT.Tools.VisualStudioTextTransform
 {
     /// <summary>
-    /// Interface to resolve msbuild variables.
+    /// Interface to resolve 'msbuild' variables.
     /// </summary>
     public interface IVariableResolver
     {

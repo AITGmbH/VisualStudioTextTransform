@@ -17,7 +17,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     /// </summary>
     public static class TemplateProcessor
     {
-        private static readonly TraceSource _source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         /// <summary>
         /// /
@@ -41,7 +41,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             ////printfn "Transforming templates..."
             ////dte.ExecuteCommand("TextTransformation.TransformAllTemplates")
 
-            _source.TraceEvent(TraceEventType.Information, 0, Resources.Program_ProcessTemplate_Processing___0_____, templateFileName);
+            Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_ProcessTemplate_Processing___0_____, templateFileName);
 
             var templateDir = Path.GetDirectoryName(templateFileName);
             //  Setup Environment
@@ -111,13 +111,13 @@ namespace AIT.Tools.VisualStudioTextTransform
             var templateDir = Path.GetDirectoryName(templateFileName);
             var defaultResolver = DefaultVariableResolver.CreateFromDte(dte, templateFileName);
             IVariableResolver resolver = defaultResolver;
-            _source.TraceEvent(TraceEventType.Information, 1, "Default TargetDir {0} will be used", defaultResolver.TargetDir);
-            _source.TraceEvent(TraceEventType.Information, 1, "Default SolutionDir {0} will be used", defaultResolver.SolutionDir);
-            _source.TraceEvent(TraceEventType.Information, 1, "Default ProjectDir {0} will be used", defaultResolver.ProjectDir);
+            Source.TraceEvent(TraceEventType.Information, 1, "Default TargetDir {0} will be used", defaultResolver.TargetDir);
+            Source.TraceEvent(TraceEventType.Information, 1, "Default SolutionDir {0} will be used", defaultResolver.SolutionDir);
+            Source.TraceEvent(TraceEventType.Information, 1, "Default ProjectDir {0} will be used", defaultResolver.ProjectDir);
 
             if (!string.IsNullOrEmpty(options.TargetDir) && Directory.Exists(options.TargetDir))
             {
-                _source.TraceEvent(TraceEventType.Information, 1, "TargetDir {0} will be added ", options.TargetDir);
+                Source.TraceEvent(TraceEventType.Information, 1, "TargetDir {0} will be added ", options.TargetDir);
                 resolver = new CombiningVariableResolver(new DefaultVariableResolver(null, null, options.TargetDir), resolver);
             }
 
@@ -166,7 +166,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
 
             solutionFileName = Path.GetFullPath(solutionFileName);
-            _source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Creating_VS_instance___);
+            Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Creating_VS_instance___);
             using (new MessageFilter())
             {
                 var result = DteHelper.CreateDteInstance();
@@ -174,10 +174,10 @@ namespace AIT.Tools.VisualStudioTextTransform
                 var processId = result.Item1;
                 try
                 {
-                    _source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Opening__0_, solutionFileName);
+                    Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Opening__0_, solutionFileName);
                     dte.Solution.Open(solutionFileName);
 
-                    _source.TraceEvent(TraceEventType.Verbose, 0, Resources.Program_Main_Finding_and_processing___tt_templates___);
+                    Source.TraceEvent(TraceEventType.Verbose, 0, Resources.Program_Main_Finding_and_processing___tt_templates___);
                     var firstError =
                         TemplateProcessor.FindTemplates(Path.GetDirectoryName(solutionFileName))
                             .Select(t => Tuple.Create(t, ProcessTemplate(dte, t, options)))
@@ -185,16 +185,16 @@ namespace AIT.Tools.VisualStudioTextTransform
 
                     if (firstError != null)
                     {
-                        _source.TraceEvent(TraceEventType.Warning, 0, Resources.Program_Main_FAILED_to_process___0__,
+                        Source.TraceEvent(TraceEventType.Warning, 0, Resources.Program_Main_FAILED_to_process___0__,
                             firstError.Item1);
                         foreach (var error in firstError.Item2)
                         {
-                            _source.TraceEvent(TraceEventType.Error, 0, Resources.Program_Main_, error);
+                            Source.TraceEvent(TraceEventType.Error, 0, Resources.Program_Main_, error);
                         }
                         return false;
                     }
 
-                    _source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Everything_worked_);
+                    Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Everything_worked_);
                     return true;
                 }
                 finally
