@@ -85,38 +85,18 @@ namespace AIT.Tools.VisualStudioTextTransform
 
         private IEnumerable<string> PossibleFullPaths(string path)
         {
-            var combinedPath = Path.Combine(_templateDir, path);
-            string relativePath = null;
-            try
-            {
-                relativePath = Path.GetDirectoryName(combinedPath);
-            }
-            catch (PathTooLongException)
-            {
-                Source.TraceEvent(TraceEventType.Error, 0, "Path \"{0}\" is to long and has been ignored.", combinedPath);
-            }
-                // First check if we have a full path here
+            // check relative to template file
+            yield return Path.Combine(_templateDir, path);
+            
+            // First check if we have a full path here
             yield return path;
-                // check relative to template file
-            if (relativePath != null)
-            {
-                yield return relativePath;
-            }
             // TODO: Add more (GAC?, configured by CLI?)
         }
 
-        private string ResolvePathPrivate(string path)
+
+        private string ResolveFilePathPrivate(string path)
         {
-            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
-            var possiblePaths = ReplaceProjectVarsPrivate(path);
-
-
-            var paths = possiblePaths.SelectMany(PossibleFullPaths).ToList();
-
-            foreach (var possiblePath in paths)
-            {
-                Source.TraceEvent(TraceEventType.Verbose, 0, "Considering {0}", possiblePath);
-            }
+            var paths = ResolveAllPathsPrivate(path);
 
             var result = paths.FirstOrDefault(File.Exists);
             if (result != null)
@@ -128,6 +108,19 @@ namespace AIT.Tools.VisualStudioTextTransform
             return path;
         }
 
+        private IEnumerable<string> ResolveAllPathsPrivate(string path)
+        {
+            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
+            var possiblePaths = ReplaceProjectVarsPrivate(path);
+
+            var paths = possiblePaths.SelectMany(PossibleFullPaths).ToList();
+
+            foreach (var possiblePath in paths)
+            {
+                Source.TraceEvent(TraceEventType.Verbose, 0, "Considering {0}", possiblePath);
+            }
+            return paths;
+        }
 
         /// <summary>
         /// Path and file name of the template currently processing
@@ -185,7 +178,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         {
             content = string.Empty;
             location = string.Empty;
-            var resolved = ResolvePathPrivate(requestFileName);
+            var resolved = ResolveFilePathPrivate(requestFileName);
             if (File.Exists(resolved))
             {
                 location = Path.GetFullPath(resolved);
@@ -232,7 +225,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             Justification = "There is no satisfying workaround.")]
         public string ResolveAssemblyReference(string assemblyReference)
         {
-            var relative = ResolvePathPrivate(assemblyReference);
+            var relative = ResolveFilePathPrivate(assemblyReference);
             if (File.Exists(relative))
             {
                 return relative;
@@ -298,7 +291,16 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 throw new ArgumentNullException("path", Resources.VisualStudioTextTemplateHost_ResolvePath_the_file_name_cannot_be_null);
             }
-            return ResolvePathPrivate(path);
+
+            var resolveAllPathsPrivate = ResolveAllPathsPrivate(path).ToList();
+            var resolvedPath = resolveAllPathsPrivate.FirstOrDefault(p => Directory.Exists(p) || File.Exists(p));
+            if (resolvedPath != null)
+            {
+                Source.TraceEvent(TraceEventType.Verbose, 1, "Using existing path: {0}", resolvedPath);
+                return resolvedPath;
+            }
+
+            throw new ArgumentException("Could not resolve path: " + path);
         }
 
         /// <summary>

@@ -41,12 +41,18 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
 
         private static void TestExecutionByName(string testTemplateName, string expected)
         {
-            var itemPath = Path.Combine(_testEnv.TestProjectDir, "TestTemplates", testTemplateName);
+            var itemPath = GetItemPath(testTemplateName);
             Assert.IsTrue(File.Exists(itemPath));
             var result = TemplateProcessor.ProcessTemplateInMemory(_dte, itemPath, DefaultVariableResolver.CreateFromDte(_dte, itemPath));
             Assert.IsFalse(result.Item2.Errors.HasErrors);
             Assert.IsFalse(result.Item2.Errors.Count > 0);
             Assert.AreEqual(expected, result.Item1);
+        }
+
+        private static string GetItemPath(string testTemplateName)
+        {
+            var itemPath = Path.Combine(_testEnv.TestProjectDir, "TestTemplates", testTemplateName);
+            return itemPath;
         }
 
         [TestMethod]
@@ -82,6 +88,15 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         public void TestSolutionDir()
         {
             TestExecutionByName("SolutionDir.tt", HelperClass.GetResult());
+        }
+
+        [TestMethod]
+        public void TestGetTemplatePathViaHostResolve()
+        {
+            const string template = "GetTemplatePathViaHostResolve.tt";
+            var itemPath = GetItemPath(template);
+            
+            TestExecutionByName(template, Path.GetDirectoryName(itemPath));
         }
 
         [TestMethod]
