@@ -132,9 +132,13 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <returns></returns>
         public IEnumerable<string> ResolveVariable(string variable)
         {
-            if (variable != null)
+            if (!string.IsNullOrEmpty(variable))
             {
-                yield return SimpleResolveVariable(variable) + Path.DirectorySeparatorChar;
+                var resolved = SimpleResolveVariable(variable);
+                if (resolved != null)
+                {
+                    yield return resolved + Path.DirectorySeparatorChar;
+                }
             }
         }
     }

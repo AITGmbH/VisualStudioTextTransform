@@ -113,7 +113,8 @@ namespace AIT.Tools.VisualStudioTextTransform
             Source.TraceEvent(TraceEventType.Verbose, 0, Resources.VisualStudioTextTemplateHost_ResolvePathPrivate_resolving__0_, path);
             var possiblePaths = ReplaceProjectVarsPrivate(path);
 
-            var paths = possiblePaths.SelectMany(PossibleFullPaths).ToList();
+            // Distinct because Path.Combine ignores the first parameter when the second one is a full path -> duplicates.
+            var paths = possiblePaths.SelectMany(PossibleFullPaths).Distinct().ToList();
 
             foreach (var possiblePath in paths)
             {

@@ -118,10 +118,17 @@ namespace AIT.Tools.VisualStudioTextTransform
             Source.TraceEvent(TraceEventType.Information, 1, "Default SolutionDir {0} will be used", defaultResolver.SolutionDir);
             Source.TraceEvent(TraceEventType.Information, 1, "Default ProjectDir {0} will be used", defaultResolver.ProjectDir);
 
-            if (!string.IsNullOrEmpty(options.TargetDir) && Directory.Exists(options.TargetDir))
+            if (!string.IsNullOrEmpty(options.TargetDir))
             {
-                Source.TraceEvent(TraceEventType.Information, 1, "TargetDir {0} will be added ", options.TargetDir);
-                resolver = new CombiningVariableResolver(new DefaultVariableResolver(null, null, options.TargetDir), resolver);
+                if (Directory.Exists(options.TargetDir))
+                {
+                    Source.TraceEvent(TraceEventType.Information, 1, "TargetDir {0} will be added ", options.TargetDir);
+                    resolver = new CombiningVariableResolver(new DefaultVariableResolver(null, null, options.TargetDir), resolver);
+                }
+                else
+                {
+                    Source.TraceEvent(TraceEventType.Warning, 1, "TargetDir {0} doesn't exist and will be ignored!", options.TargetDir);
+                }
             }
 
             var result = ProcessTemplateInMemory(dte, templateFileName, resolver);

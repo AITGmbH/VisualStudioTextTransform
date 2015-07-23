@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="TestEnv.cs" />
     <Compile Include="IntegrationTest.cs" />
+    <Compile Include="TestVariableResolver.cs" />
     <None Include="TestTemplates\TargetDir.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TargetDir.txt</LastGenOutput>
