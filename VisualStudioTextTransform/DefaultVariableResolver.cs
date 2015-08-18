@@ -80,6 +80,10 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
 
             var templateFileItem = dte.Solution.FindProjectItem(templateFile);
+            if (templateFileItem == null)
+            { // This item is not part of the solution
+                throw new TemplateNotPartOfSolutionException("The template-file " + templateFile + " was not found in the given solution!");
+            }
             var project = templateFileItem.ContainingProject;
             var projectDir = Path.GetDirectoryName(project.FullName);
             string outDir = project.ConfigurationManager.ActiveConfiguration

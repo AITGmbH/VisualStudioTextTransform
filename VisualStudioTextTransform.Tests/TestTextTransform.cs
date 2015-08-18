@@ -90,6 +90,13 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(TemplateNotPartOfSolutionException))]
+        public void TestNotPartOfSolution()
+        {
+            TestExecutionByName("NotPartOfSolution.tt", HelperClass.GetResult());
+        }
+
+        [TestMethod]
         public void TestGetTemplatePathViaHostResolve()
         {
             const string template = "GetTemplatePathViaHostResolve.tt";

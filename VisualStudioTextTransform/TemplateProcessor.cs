@@ -94,7 +94,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <param name="dte"></param>
         /// <param name="templateFileName"></param>
         /// <param name="options"></param>
-        /// <returns></returns>
+        /// <returns>null if we could not process the template and an error-collection of the compilation otherwise.</returns>
         public static CompilerErrorCollection ProcessTemplate(DTE2 dte, string templateFileName, Options options)
         {
             if (dte == null)
@@ -109,10 +109,13 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 throw new ArgumentNullException("options");
             }
-
             var templateDir = Path.GetDirectoryName(templateFileName);
             Debug.Assert(templateDir != null, "templateDir != null, don't expected templateFileName to be a root directory!");
+
             var defaultResolver = DefaultVariableResolver.CreateFromDte(dte, templateFileName);
+            
+            
+            
             IVariableResolver resolver = defaultResolver;
             Source.TraceEvent(TraceEventType.Information, 1, "Default TargetDir {0} will be used", defaultResolver.TargetDir);
             Source.TraceEvent(TraceEventType.Information, 1, "Default SolutionDir {0} will be used", defaultResolver.SolutionDir);
@@ -190,7 +193,19 @@ namespace AIT.Tools.VisualStudioTextTransform
                     Source.TraceEvent(TraceEventType.Verbose, 0, Resources.Program_Main_Finding_and_processing___tt_templates___);
                     var firstError =
                         FindTemplates(Path.GetDirectoryName(solutionFileName))
-                            .Select(t => Tuple.Create(t, ProcessTemplate(dte, t, options)))
+                            .Select(t =>
+                                    { 
+                                        try
+                                        {
+                                            return Tuple.Create(t, ProcessTemplate(dte, t, options));
+                                        }
+                                        catch (TemplateNotPartOfSolutionException e)
+                                        {
+                                            Source.TraceEvent(TraceEventType.Warning, 2, "The template found within the solution dir was not part of the given solution ({0}): {1}", solutionFileName, t);
+                                            return null;
+                                        }
+                                    })
+                            .Where(t => t != null)
                             .FirstOrDefault(tuple => tuple.Item2.Count > 0);
 
                     if (firstError != null)

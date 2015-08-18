@@ -73,6 +73,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 Source.TraceEvent(TraceEventType.Warning, 0, "Self-hosting is disabled");
                 return CreateDteInstanceWithActivator();
             }
+
             // We Create our own instance for customized logging + killing afterwards
             var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var pfx64 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
@@ -88,6 +89,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 Source.TraceEvent(TraceEventType.Error, 0, "Could not find devenv.exe, falling back to COM.");
                 return CreateDteInstanceWithActivator();
             }
+
             using (var start =
                 Process.Start(
                     devenvExe,
@@ -112,6 +114,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                         dte = GetById(start.Id);
                         currentSpan += waitTime;
                     }
+
                     if (dte == null)
                     {
                         if (!start.HasExited)
@@ -121,6 +124,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                         Source.TraceEvent(TraceEventType.Error, 1, "Could not get DTE instance from process!");
                         return CreateDteInstanceWithActivator();
                     }
+
                     return Tuple.Create(start.Id, dte);
                 }
                 catch (Exception e)
@@ -131,6 +135,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                     {
                         start.Kill();
                     }
+
                     throw;
                 }
             }
@@ -160,6 +165,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 process = Process.GetProcessById(processId);
             }
+
             dte.Quit();
 
             // Makes no sense to wait when the process already exited, or when we have no processId to kill.
@@ -169,6 +175,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 Thread.Sleep(1000);
                 i++;
             }
+
             if (process != null && !process.HasExited)
             {
                 process.Kill();
