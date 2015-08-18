@@ -199,7 +199,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                                         {
                                             return Tuple.Create(t, ProcessTemplate(dte, t, options));
                                         }
-                                        catch (TemplateNotPartOfSolutionException e)
+                                        catch (TemplateNotPartOfSolutionException)
                                         {
                                             Source.TraceEvent(TraceEventType.Warning, 2, "The template found within the solution dir was not part of the given solution ({0}): {1}", solutionFileName, t);
                                             return null;
