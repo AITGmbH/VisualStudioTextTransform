@@ -69,6 +69,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="TestEnv.cs" />
     <Compile Include="IntegrationTest.cs" />
     <Compile Include="TestVariableResolver.cs" />
@@ -179,7 +182,6 @@
     </When>
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-
   <Import Project="$(SolutionDir)\..\packages\AIT.Build\content\build.targets" />
   <Import Project="$(CSharpTargetsPath)" Condition="Exists('$(CSharpTargetsPath)')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

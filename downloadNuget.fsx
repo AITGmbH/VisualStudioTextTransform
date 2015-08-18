@@ -4,4 +4,4 @@
 // ----------------------------------------------------------------------------
 // Get any working NuGet.exe
 
-#load "packages/Yaaf.AdvancedBuilding/content/downloadNugetInclude.fsx"
+#load "packages/AIT.Build/content/downloadNugetInclude.fsx"
