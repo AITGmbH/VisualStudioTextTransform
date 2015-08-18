@@ -1,0 +1,16 @@
+source https://nuget.org/api/v2
+
+// Build
+nuget FAKE
+nuget FSharp.Formatting
+nuget FSharp.Compiler.Service
+
+// Project
+nuget FSharp.Core ~> 3.0
+nuget Mono.Cecil
+
+//Tests
+nuget Nuget.CommandLine
+nuget NUnit
+nuget NUnit.Runners
+nuget Unquote

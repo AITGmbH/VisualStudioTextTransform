@@ -49,7 +49,12 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 NativeMethods.IMessageFilter f;
                 var hr = NativeMethods.CoRegisterMessageFilter(_oldFilter, out f);
-                Debug.Assert(hr >= 0, "CoRegisterMessageFilter failed.");
+                if (hr < 0)
+                {
+                    Debug.Assert(false, "CoRegisterMessageFilter failed.");
+                    Trace.TraceWarning("CoRegisterMessageFilter failed: {0:X}", hr);
+                }
+
             }
         }
 

@@ -57,9 +57,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 var projectDir = Path.GetDirectoryName(project.FullName);
                 Debug.Assert(projectDir != null, "projectDir != null, don't expect project.FullName to be a root directory.");
                 string defaultNamespace = project.Properties.Item("DefaultNamespace").Value.ToString();
-                var templateFileNameUpper = templateFileName.ToUpperInvariant();
-                var projectDirUpper = projectDir.ToUpperInvariant();
-                Debug.Assert(templateFileNameUpper.StartsWith(projectDirUpper, StringComparison.Ordinal), "Template file-name is not within the project directory.");
+                Debug.Assert(templateFileName.StartsWith(projectDir, StringComparison.OrdinalIgnoreCase), "Template file-name is not within the project directory.");
 
                 var finalNamespace = defaultNamespace;
                 if (templateDir.Length != projectDir.Length)
