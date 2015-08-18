@@ -5,31 +5,28 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
 {
     public class TestEnv
     {
-        private readonly string _debugDir;
-        private readonly string _binDir;
         private readonly string _testProjectDir;
         private readonly string _solutionDir;
         private readonly string _solutionFile;
+        private readonly string _globalProjectDir;
 
         public TestEnv()
         {
-
-            _debugDir = Environment.CurrentDirectory;
-            _binDir = Path.GetDirectoryName(_debugDir);
-            _testProjectDir = Path.GetDirectoryName(_binDir);
-            _solutionDir = Path.GetDirectoryName(_testProjectDir);
+            // This is a bit ugly, but the problem is we use the current solution for testing
+            // But we cannot use the MSTest Deploy mechanism because of path length problems.
+            var globalProjectDir = Environment.GetEnvironmentVariable("PROJECT_DIRECTORY");
+            if (string.IsNullOrEmpty(globalProjectDir))
+            {
+                var configurationTestDir = Environment.CurrentDirectory;
+                var testDir = Path.GetDirectoryName(configurationTestDir);
+                var buildDir = Path.GetDirectoryName(testDir);
+                globalProjectDir = Path.GetDirectoryName(buildDir);
+            }
+            _globalProjectDir = globalProjectDir;
+            _solutionDir = Path.Combine(_globalProjectDir, "src");
+            _testProjectDir = Path.Combine(_solutionDir, "VisualStudioTextTransform.Tests");
             _solutionFile = Path.GetFullPath(Path.Combine(_solutionDir, "VisualStudioTextTransform.sln"));
             
-        }
-
-        public string DebugDir
-        {
-            get { return _debugDir; }
-        }
-
-        public string BinDir
-        {
-            get { return _binDir; }
         }
 
         public string TestProjectDir

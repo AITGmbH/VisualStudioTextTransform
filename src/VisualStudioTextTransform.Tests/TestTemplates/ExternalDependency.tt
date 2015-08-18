@@ -1,6 +1,6 @@
 ﻿<#@ Template Debug="False" Hostspecific="True" Language="C#" #>
 <#@ Output Extension=".txt" #>
-<#@ Assembly Name="$(ProjectDir)bin\Debug\AIT.Tools.VisualStudioTextTransform.Tests.dll" #>
+<#@ Assembly Name="$(ProjectDir)..\..\build\test\net45\AIT.Tools.VisualStudioTextTransform.Tests.dll" #>
 <#@ Import Namespace="System.CodeDom.Compiler" #>
 <#@ Import Namespace="System.Reflection" #>
 <#@ Import Namespace="AIT.Tools.VisualStudioTextTransform.Tests" #>

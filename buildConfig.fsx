@@ -27,6 +27,9 @@ open Fake.Git
 open Fake.FSharpFormatting
 open AssemblyInfoFile
 
+// Used by the TestEnv.cs
+setEnvironVar "PROJECT_DIRECTORY" (Path.GetFullPath ".")
+
 (**
 ## Main project configuration
 
@@ -70,6 +73,9 @@ before running the build (if you only use paket, you either leave it out or use 
 *)
     // We must restore to get a Razor3 and Razor2 (paket can only handle one)
     UseNuget = true
+    SetupMSTest = fun p ->
+      {p with
+          TestSettingsPath = @"..\..\..\src\settings.testsettings" }
 (**
 ## The `GeneratedFileList` property
 

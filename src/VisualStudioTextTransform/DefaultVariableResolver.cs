@@ -89,7 +89,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             string outDir = project.ConfigurationManager.ActiveConfiguration
                 .Properties.Item("OutputPath").Value.ToString();
             Debug.Assert(projectDir != null, "projectDir != null, did not expect project.FullName to be a root directory!");
-            var targetDir = Path.Combine(projectDir, outDir);
+            var targetDir = Path.GetFullPath(Path.Combine(projectDir, outDir));
             return new DefaultVariableResolver(projectDir, Path.GetDirectoryName(dte.Solution.FullName), targetDir);
         }
 
