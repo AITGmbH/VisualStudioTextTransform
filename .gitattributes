@@ -5,7 +5,7 @@
 
 # Custom for Visual Studio
 *.cs diff=csharp text=auto eol=lf
-*.tt diff=csharp text=auto eol=lf
+*.tt diff=csharp text=auto eol=crlf
 *.fs diff=csharp text=auto eol=lf
 *.fsi diff=csharp text=auto eol=lf
 *.fsx diff=csharp text=auto eol=lf
