@@ -33,7 +33,14 @@ open FSharp.MetadataFormat
 
 open RazorEngine.Compilation
 
-let commitHash = lazy Information.getCurrentSHA1(".")
+let commitHash =
+    // Support for VSO Environment
+    let version = environVar "BUILD_SOURCEVERSION"
+    lazy
+        if System.String.IsNullOrEmpty version then
+            Information.getCurrentSHA1(".")
+        else
+            version
 
 // Documentation
 
