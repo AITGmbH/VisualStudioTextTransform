@@ -8,7 +8,7 @@
     <owners>@authors@</owners>
     <licenseUrl>https://github.com/AITGmbH/VisualStudioTextTransform/blob/develop/LICENSE.md</licenseUrl>
     <projectUrl>https://github.com/AITGmbH/VisualStudioTextTransform</projectUrl>
-    <!--<iconUrl></iconUrl>-->
+    <iconUrl>http://www.aitgmbh.de/fileadmin/templates/templates2011/bilder/footer-logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
     <description>@description@</description>

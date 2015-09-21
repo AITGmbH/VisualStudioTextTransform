@@ -24,7 +24,12 @@ namespace AIT.Tools.VisualStudioTextTransform
         private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         // From http://www.viva64.com/en/b/0169/
-        internal static DTE2 GetById(int id)
+        /// <summary>
+        /// Tries to get the DTE2 instance by process id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static DTE2 TryGetById(int id)
         {
             //rot entry for visual studio running under current process.
             var rotEntry = string.Format(CultureInfo.InvariantCulture, "!VisualStudio.DTE.12.0:{0}", id);
@@ -111,7 +116,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                     {
                         Thread.Sleep(waitTime);
                         Source.TraceInformation("Trying to get DTE instance from process...");
-                        dte = GetById(start.Id);
+                        dte = TryGetById(start.Id);
                         currentSpan += waitTime;
                     }
 

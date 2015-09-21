@@ -61,11 +61,7 @@ Setup which nuget packages are created.
               NoDefaultExcludes = true
               ReleaseNotes = toLines release.Notes
               Dependencies =
-                [ "FSharp.Formatting"
-                  // "FSharp.Compiler.Service" included in FAKE
-                  "FSharpVSPowerTools.Core"
-                  // "Mono.Cecil" included in FAKE
-                  "FAKE" ]
+                [ ]
                   |> List.map (fun name -> name, (GetPackageVersion "packages" name |> RequireExactly)) } ) ]
 (**
 With `UseNuget` you can specify if AIT.Build should restore nuget packages
