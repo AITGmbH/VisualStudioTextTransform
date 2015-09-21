@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Mime;
 using System.Threading;
 using System.Windows.Forms;
+using AIT.VisualStudio.Controlling;
 using EnvDTE80;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

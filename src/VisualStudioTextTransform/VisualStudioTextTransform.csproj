@@ -44,6 +44,10 @@
     <AssemblyOriginatorKeyFile>..\Dummy.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AIT.VisualStudio.Controlling, Version=0.1.0.0, Culture=neutral, PublicKeyToken=672037e21b2b5fe5, processorArchitecture=x86">
+      <HintPath>..\..\packages\.nuget\AIT.VisualStudio.Controlling.0.1.0\lib\net45\AIT.VisualStudio.Controlling.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)..\packages\.nuget\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
       <Private>True</Private>
@@ -82,8 +86,6 @@
     <Compile Include="CombiningVariableResolver.cs" />
     <Compile Include="DefaultVariableResolver.cs" />
     <Compile Include="IVariableResolver.cs" />
-    <Compile Include="LogicalCallContextChange.cs" />
-    <Compile Include="NativeMethods.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,13 +112,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="DteHelper.cs" />
     <Compile Include="TemplateNotPartOfSolutionException.cs" />
     <Compile Include="TemplateProcessor.cs" />
     <Compile Include="VisualStudioTextTemplateHost.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ComHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\AIT.CodeAnalysisDictionary.xml">

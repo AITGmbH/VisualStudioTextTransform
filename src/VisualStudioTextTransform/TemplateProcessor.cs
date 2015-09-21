@@ -9,6 +9,7 @@ using System.Threading;
 using AIT.Tools.VisualStudioTextTransform.Properties;
 using EnvDTE80;
 using Engine = Microsoft.VisualStudio.TextTemplating.Engine;
+using AIT.VisualStudio.Controlling;
 
 namespace AIT.Tools.VisualStudioTextTransform
 {
