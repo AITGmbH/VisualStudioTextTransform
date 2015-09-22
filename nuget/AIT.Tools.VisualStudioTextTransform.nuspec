@@ -19,5 +19,8 @@
   </metadata>
   <files>
     <file src="release/lib/net45/AIT.Tools.VisualStudioTextTransform.exe" target="tools\AIT.Tools.VisualStudioTextTransform.exe" />
+    <file src="release/lib/net45/AIT.VisualStudio.Controlling.dll" target="tools\AIT.VisualStudio.Controlling.dll" />
+    <file src="release/lib/net45/CommandLine.dll" target="tools\CommandLine.dll" />
+    <file src="release/lib/net45/Microsoft.MSXML.dll" target="tools\Microsoft.MSXML.dll" />
   </files>
 </package>

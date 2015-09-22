@@ -71,7 +71,7 @@ type BuildParams =
       BuildMode = "Release"
       PlatformName = "Any CPU"
       UseProjectOutDir = true
-      FindSolutionFiles = fun _ -> !! "**/*.sln" :> _
+      FindSolutionFiles = fun _ -> !! "src/**/*.sln" :> _
       FindProjectFiles = fun _ -> Seq.empty
       FindTestFiles = fun _ -> Seq.empty }
 
@@ -134,7 +134,9 @@ type BuildConfiguration =
     // Test
     /// Defaults to "./test/"
     TestDir : string
+    DisableNUnit : bool
     SetupNUnit : (NUnitParams -> NUnitParams)
+    DisableMSTest : bool
     SetupMSTest : (MSTestParams -> MSTestParams)
 
     // Documentation generation
@@ -177,7 +179,9 @@ type BuildConfiguration =
       FileNewIssueUrl = ""
       SourceReproUrl = ""
       NugetPackages = []
+      DisableNUnit = false
       SetupNUnit = id
+      DisableMSTest = false
       SetupMSTest = id
       GeneratedFileList = []
       BuildDir = "./build/"

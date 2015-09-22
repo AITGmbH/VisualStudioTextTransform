@@ -6,16 +6,16 @@ using CommandLine;
 namespace AIT.Tools.VisualStudioTextTransform
 {
     /// <summary>
-    /// /
+    /// the entry point of the application.
     /// </summary>
     public static class Program
     {
         private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         /// <summary>
-        /// /
+        /// the Entry point of the application.
         /// </summary>
-        /// <param name="arguments"></param>
+        /// <param name="arguments">the arguments of the program</param>
         /// <returns></returns>
         [STAThread]
         public static int Main(string[] arguments)

@@ -5,27 +5,26 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using AIT.Tools.VisualStudioTextTransform.Properties;
+using AIT.VisualStudio.Controlling;
 using EnvDTE80;
 using Engine = Microsoft.VisualStudio.TextTemplating.Engine;
-using AIT.VisualStudio.Controlling;
 
 namespace AIT.Tools.VisualStudioTextTransform
 {
     /// <summary>
-    /// /
+    ///     Utility class to process t4 templates.
     /// </summary>
     public static class TemplateProcessor
     {
         private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
         /// <summary>
-        /// /
+        ///     Process the given template in memory
         /// </summary>
-        /// <param name="dte"></param>
-        /// <param name="templateFileName"></param>
-        /// <param name="resolver"></param>
+        /// <param name="dte">the <see cref="DTE2" /> instance.</param>
+        /// <param name="templateFileName">the path of the template.</param>
+        /// <param name="resolver">the resolver to use.</param>
         /// <returns></returns>
         public static Tuple<string, VisualStudioTextTemplateHost> ProcessTemplateInMemory(DTE2 dte, string templateFileName, IVariableResolver resolver)
         {
@@ -57,7 +56,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 var project = templateFileItem.ContainingProject;
                 var projectDir = Path.GetDirectoryName(project.FullName);
                 Debug.Assert(projectDir != null, "projectDir != null, don't expect project.FullName to be a root directory.");
-                string defaultNamespace = project.Properties.Item("DefaultNamespace").Value.ToString();
+                var defaultNamespace = project.Properties.Item("DefaultNamespace").Value.ToString();
                 Debug.Assert(templateFileName.StartsWith(projectDir, StringComparison.OrdinalIgnoreCase), "Template file-name is not within the project directory.");
 
                 var finalNamespace = defaultNamespace;
@@ -87,11 +86,11 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        ///     Process the given template by creating a resolver from information provided by the <see cref="DTE2" /> instance.
         /// </summary>
-        /// <param name="dte"></param>
-        /// <param name="templateFileName"></param>
-        /// <param name="options"></param>
+        /// <param name="dte">the <see cref="DTE2" /> instance.</param>
+        /// <param name="templateFileName">the path to the template file.</param>
+        /// <param name="options">the options to use.</param>
         /// <returns>null if we could not process the template and an error-collection of the compilation otherwise.</returns>
         public static CompilerErrorCollection ProcessTemplate(DTE2 dte, string templateFileName, Options options)
         {
@@ -111,9 +110,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             Debug.Assert(templateDir != null, "templateDir != null, don't expected templateFileName to be a root directory!");
 
             var defaultResolver = DefaultVariableResolver.CreateFromDte(dte, templateFileName);
-            
-            
-            
+
             IVariableResolver resolver = defaultResolver;
             Source.TraceEvent(TraceEventType.Information, 1, "Default TargetDir {0} will be used", defaultResolver.TargetDir);
             Source.TraceEvent(TraceEventType.Information, 1, "Default SolutionDir {0} will be used", defaultResolver.SolutionDir);
@@ -161,6 +158,13 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
         }
 
+        /// <summary>
+        ///     Process all templates of the given solution-file.
+        /// </summary>
+        /// <param name="dte">the <see cref="DTE2" /> instance.</param>
+        /// <param name="solutionFileName">the filename of the solution</param>
+        /// <param name="options">the options to use for processing</param>
+        /// <returns></returns>
         public static bool ProcessSolution(DTE2 dte, string solutionFileName, Options options)
         {
             Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Opening__0_, solutionFileName);
@@ -170,17 +174,17 @@ namespace AIT.Tools.VisualStudioTextTransform
             var firstError =
                 FindTemplates(Path.GetDirectoryName(solutionFileName))
                     .Select(t =>
-                    {
-                        try
-                        {
-                            return Tuple.Create(t, ProcessTemplate(dte, t, options));
-                        }
-                        catch (TemplateNotPartOfSolutionException)
-                        {
-                            Source.TraceEvent(TraceEventType.Warning, 2, "The template found within the solution dir was not part of the given solution ({0}): {1}", solutionFileName, t);
-                            return null;
-                        }
-                    })
+                            {
+                                try
+                                {
+                                    return Tuple.Create(t, ProcessTemplate(dte, t, options));
+                                }
+                                catch (TemplateNotPartOfSolutionException)
+                                {
+                                    Source.TraceEvent(TraceEventType.Warning, 2, "The template found within the solution dir was not part of the given solution ({0}): {1}", solutionFileName, t);
+                                    return null;
+                                }
+                            })
                     .Where(t => t != null)
                     .FirstOrDefault(tuple => tuple.Item2.Count > 0);
 
@@ -200,13 +204,18 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        ///     Process all templates of the given solution-file.
         /// </summary>
-        /// <param name="solutionFileName"></param>
-        /// <param name="options"></param>
+        /// <param name="solutionFileName">the filename of the solution</param>
+        /// <param name="options">the options to use for processing</param>
         /// <returns></returns>
         public static bool ProcessSolution(string solutionFileName, Options options)
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException("options");
+            }
+
             if (string.IsNullOrEmpty(solutionFileName) || !File.Exists(solutionFileName))
             {
                 throw new ArgumentException(
@@ -223,9 +232,11 @@ namespace AIT.Tools.VisualStudioTextTransform
                 var processId = result.Item1;
                 try
                 {
-                    var controller = new VisualStudioController(dte);
-                    var tt = controller.GetTextTransformFeature();
-                    return tt.TransformTemplates(solutionFileName, options.TargetDir);
+                    using (var controller = new VisualStudioController(dte))
+                    {
+                        var tt = controller.GetTextTransformFeature();
+                        return tt.TransformTemplates(solutionFileName, options.TargetDir);
+                    }
                     //return ProcessSolution(dte, solutionFileName, options);
                 }
                 finally
@@ -235,5 +246,4 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
         }
     }
-    
 }

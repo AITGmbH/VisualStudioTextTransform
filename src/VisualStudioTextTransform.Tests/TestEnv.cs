@@ -3,7 +3,7 @@ using System.IO;
 
 namespace AIT.Tools.VisualStudioTextTransform.Tests
 {
-    public class TestEnv
+    internal class TestEnv
     {
         private readonly string _testProjectDir;
         private readonly string _solutionDir;

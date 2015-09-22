@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using AIT.VisualStudio.Controlling;
 
 namespace AIT.Tools.VisualStudioTextTransform
 {
+    /// <summary>
+    ///     Helper to extend the <see cref="IVisualStudioHelperService" /> interface.
+    ///     See also the <see cref="VisualStudioHostExtensions" /> class.
+    /// </summary>
     public class TransformTemplatesFeatureInvoker
     {
         private readonly string _handle;
@@ -14,12 +14,12 @@ namespace AIT.Tools.VisualStudioTextTransform
 
         internal TransformTemplatesFeatureInvoker(IVisualStudioHelperService service, string handle)
         {
-            this._service = service;
-            this._handle = handle;
+            _service = service;
+            _handle = handle;
         }
 
         /// <summary>
-        /// Install the given packages to the given project
+        ///     Install the given packages to the given project
         /// </summary>
         public bool TransformTemplates(string solutionFile, string targetDirectory)
         {
@@ -27,7 +27,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             dict["solutionFile"] = new FeatureDataDictionary(solutionFile, null);
             dict["targetDirectory"] = new FeatureDataDictionary(targetDirectory, null);
 
-            var result = this._service.ExecuteFeature(this._handle, new FeatureDataDictionary("TRANSFORM_SOLUTION", dict));
+            var result = _service.ExecuteFeature(_handle, new FeatureDataDictionary("TRANSFORM_SOLUTION", dict));
             return bool.Parse(result.Data);
         }
     }

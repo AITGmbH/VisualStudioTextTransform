@@ -69,6 +69,7 @@ before running the build (if you only use paket, you either leave it out or use 
 *)
     // We must restore to get a Razor3 and Razor2 (paket can only handle one)
     UseNuget = true
+    DisableNUnit = true
     SetupMSTest = fun p ->
       {p with
           TestSettingsPath = @"..\..\..\src\settings.testsettings" }
@@ -80,7 +81,10 @@ This list is also used for documentation generation.
 Defaults to [ x.ProjectName + ".dll"; x.ProjectName + ".xml" ] which is only enough for very simple projects.
 *)
     GeneratedFileList =
-     [ "AIT.Tools.VisualStudioTextTransform.exe"; "AIT.Tools.VisualStudioTextTransform.exe.xml" ]
+     [ "AIT.Tools.VisualStudioTextTransform.exe"; "AIT.Tools.VisualStudioTextTransform.exe.xml"
+       "AIT.VisualStudio.Controlling.dll"
+       "CommandLine.dll"
+       "Microsoft.MSXML.dll" ]
 
 (**
 You can change which AssemblyInfo files are generated for you.

@@ -1,24 +1,27 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Net.Mime;
 using AIT.VisualStudio.Controlling;
 using EnvDTE80;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AIT.Tools.VisualStudioTextTransform.Tests
 {
+    /// <summary>
+    /// Test class
+    /// </summary>
     [TestClass]
     //[DeploymentItem(@"..\..\src")]
     public class TestTextTransform
     {
-        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
-
         private static StaThread _thread;
-        private static EnvDTE80.DTE2 _dte;
+        private static DTE2 _dte;
         private static int _processId;
         private static TestEnv _testEnv;
 
+        /// <summary>
+        /// Initialize the class.
+        /// </summary>
+        /// <param name="context"></param>
         [ClassInitialize]
         public static void ClassInit(TestContext context)
         {
@@ -43,6 +46,9 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
             }
         }
 
+        /// <summary>
+        /// Cleanup the class.
+        /// </summary>
         [ClassCleanup]
         public static void ClassCleanup()
         {
@@ -75,41 +81,64 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
             return itemPath;
         }
 
+        /// <summary>
+        /// Test a simple template.
+        /// </summary>
         [TestMethod]
         public void TestSimpleExample()
         {
             TestExecutionByName("SimpleExample.tt", "Some simple string format with this");
         }
 
+        /// <summary>
+        /// Test template using visual studio interfaces.
+        /// </summary>
         [TestMethod]
         public void TestVisualStudioExample()
         {
             TestExecutionByName("VisualStudioExample.tt", "VisualStudioTextTransform.Tests");
         }
 
+        /// <summary>
+        /// Test template with external dependencies.
+        /// </summary>
         [TestMethod]
         public void TestExternalDependency()
         {
             TestExecutionByName("ExternalDependency.tt", HelperClass.GetResult());
         }
 
+        /// <summary>
+        /// Test template with project directory.
+        /// </summary>
         [TestMethod]
         public void TestProjectDir()
         {
+            // ReSharper disable once LocalizableElement
             Console.WriteLine("Tested as part of ExternalDependency.tt");
         }
 
+        /// <summary>
+        /// Test template with target directory.
+        /// </summary>
         [TestMethod]
         public void TestTargetDir()
         {
             TestExecutionByName("TargetDir.tt", HelperClass.GetResult());
         }
+
+        /// <summary>
+        /// Test template with solution directory.
+        /// </summary>
         [TestMethod]
         public void TestSolutionDir()
         {
             TestExecutionByName("SolutionDir.tt", HelperClass.GetResult());
         }
 
+        /// <summary>
+        /// Test template not part of the solution.
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(TemplateNotPartOfSolutionException))]
         public void TestNotPartOfSolution()
@@ -117,6 +146,9 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
             TestExecutionByName("NotPartOfSolution.tt", HelperClass.GetResult());
         }
 
+        /// <summary>
+        /// Test template using Host.Resolve.
+        /// </summary>
         [TestMethod]
         public void TestGetTemplatePathViaHostResolve()
         {
@@ -126,6 +158,9 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
             TestExecutionByName(template, Path.GetDirectoryName(itemPath));
         }
 
+        /// <summary>
+        /// Test template in a very long path.
+        /// </summary>
         [TestMethod]
         public void TestSomeVeryLargePath()
         {

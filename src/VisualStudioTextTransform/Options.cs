@@ -8,7 +8,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     public class Options
     {
         /// <summary>
-        /// An overwrite for the TargetDir msbuild variable.
+        /// An overwrite for the Target-Directory <code>msbuild</code> variable.
         /// </summary>
         [Option('t', "targetdir", DefaultValue = null, Required = false, HelpText = "Set a custom TargetDir reference.")]
         public string TargetDir
