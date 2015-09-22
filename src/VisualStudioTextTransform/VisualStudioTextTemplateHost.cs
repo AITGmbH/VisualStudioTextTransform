@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using AIT.Tools.VisualStudioTextTransform.Properties;
+using AIT.VisualStudio.Controlling;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.TextTemplating;
@@ -22,7 +23,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     {
         private const string DefaultFileExtension = ".txt";
         private const string FileProtocol = "file:///";
-        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+        private static readonly TraceSource Source = LoggingHelper.CreateSource("AIT.Tools.VisualStudioTextTransform");
 
         private readonly string _templateFile;
         private readonly string _templateDir;

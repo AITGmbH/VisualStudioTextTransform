@@ -17,7 +17,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     /// </summary>
     public static class TemplateProcessor
     {
-        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+        private static readonly TraceSource Source = LoggingHelper.CreateSource("AIT.Tools.VisualStudioTextTransform");
 
         /// <summary>
         ///     Process the given template in memory

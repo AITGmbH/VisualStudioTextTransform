@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using AIT.Tools.VisualStudioTextTransform.Properties;
+using AIT.VisualStudio.Controlling;
 using CommandLine;
 
 namespace AIT.Tools.VisualStudioTextTransform
@@ -10,7 +11,7 @@ namespace AIT.Tools.VisualStudioTextTransform
     /// </summary>
     public static class Program
     {
-        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+        private static readonly TraceSource Source = LoggingHelper.CreateSource("AIT.Tools.VisualStudioTextTransform");
 
         /// <summary>
         /// the Entry point of the application.
