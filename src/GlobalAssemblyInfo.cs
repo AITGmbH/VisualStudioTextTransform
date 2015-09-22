@@ -4,11 +4,11 @@ using System.Reflection;
 [assembly: AssemblyCompanyAttribute("AIT GmbH & Co. KG")]
 [assembly: AssemblyProductAttribute("AIT.Tools.VisualStudioTextTransform")]
 [assembly: AssemblyCopyrightAttribute("Copyright © 2015, AIT GmbH & Co. KG")]
-[assembly: AssemblyVersionAttribute("0.1.0.0")]
-[assembly: AssemblyFileVersionAttribute("0.1.0.0")]
-[assembly: AssemblyInformationalVersionAttribute("0.1.0.0")]
+[assembly: AssemblyVersionAttribute("0.2.0")]
+[assembly: AssemblyFileVersionAttribute("0.2.0")]
+[assembly: AssemblyInformationalVersionAttribute("0.2.0")]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string Version = "0.1.0.0";
+        internal const string Version = "0.2.0";
     }
 }

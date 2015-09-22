@@ -78,6 +78,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="StaThread.cs" />
     <Compile Include="TestEnv.cs" />
     <Compile Include="IntegrationTest.cs" />
     <Compile Include="TestVariableResolver.cs" />

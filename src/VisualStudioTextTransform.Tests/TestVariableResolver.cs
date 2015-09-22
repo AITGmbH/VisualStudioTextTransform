@@ -5,9 +5,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AIT.Tools.VisualStudioTextTransform.Tests
 {
+    /// <summary>
+    /// Test the variable resolver code
+    /// </summary>
     [TestClass]
     public class TestVariableResolver
     {
+        /// <summary>
+        /// Test if the resolver combinator is working.
+        /// </summary>
         [TestMethod]
         public void TestCombinator()
         {

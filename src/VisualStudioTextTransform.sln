@@ -29,7 +29,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Settings", ".Settings", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EA64D3E0-CC84-4E3A-A8AF-871898E33EEA}"
 	ProjectSection(SolutionItems) = preProject
+		..\nuget\AIT.Tools.VisualStudioTextTransform.nuspec = ..\nuget\AIT.Tools.VisualStudioTextTransform.nuspec
 		..\buildConfig.fsx = ..\buildConfig.fsx
+		..\doc\ReleaseNotes.md = ..\doc\ReleaseNotes.md
 	EndProjectSection
 EndProject
 Global

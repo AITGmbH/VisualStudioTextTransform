@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.TextTemplating;
 namespace AIT.Tools.VisualStudioTextTransform
 {
     /// <summary>
-    /// See https://msdn.microsoft.com/en-us/library/bb126579.aspx for more details
+    /// <see href="https://msdn.microsoft.com/en-us/library/bb126579.aspx">See here</see> for more details 
     /// </summary>
     public class VisualStudioTextTemplateHost : ITextTemplatingEngineHost, IServiceProvider
     {
@@ -33,11 +33,11 @@ namespace AIT.Tools.VisualStudioTextTransform
         private Encoding _outputEncoding = Encoding.UTF8;
 
         /// <summary>
-        /// /
+        /// Initializes a new instance of the <see cref="VisualStudioTextTemplateHost"/> class.
         /// </summary>
-        /// <param name="templateFile"></param>
-        /// <param name="dte"></param>
-        /// <param name="resolver"></param>
+        /// <param name="templateFile">the path to the template file.</param>
+        /// <param name="dte">the <see cref="DTE2"/> instance.</param>
+        /// <param name="resolver">the resolver to use.</param>
         public VisualStudioTextTemplateHost(string templateFile, DTE2 dte, IVariableResolver resolver)
         {
             if (string.IsNullOrEmpty(templateFile))
@@ -54,6 +54,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                 throw new ArgumentNullException("resolver");
             }
             _templateFile = templateFile;
+            
             _dte = dte;
             _resolver = resolver;
             var directoryName = Path.GetDirectoryName(templateFile);
@@ -148,7 +149,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// The compiler errors.
         /// </summary>
         public CompilerErrorCollection Errors
         {
@@ -156,7 +157,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// The standard assembly references.
         /// </summary>
         public IList<string> StandardAssemblyReferences
         {
@@ -164,7 +165,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// the standard imports (using directives)
         /// </summary>
         public IList<string> StandardImports
         {
@@ -240,7 +241,9 @@ namespace AIT.Tools.VisualStudioTextTransform
                 // - use all versions -> not possible here
                 // - PInvoke -> bad and not cross plat
                 // - Specifying the GAC directories directly -> bad
+#pragma warning disable 618
                 var ass = Assembly.LoadWithPartialName(assemblyReference);
+#pragma warning restore 618
 
                 if (ass != null && !string.IsNullOrEmpty(ass.Location))
                 {
@@ -331,37 +334,37 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// Set the current file extension
         /// </summary>
-        /// <param name="extension"></param>
+        /// <param name="extension">the extension to use</param>
         public void SetFileExtension(string extension)
         {
             _fileExtension = extension;
         }
 
         /// <summary>
-        /// /
+        /// Set the current output encoding.
         /// </summary>
-        /// <param name="encoding"></param>
-        /// <param name="fromOutputDirective"></param>
+        /// <param name="encoding">the encoding to use.</param>
+        /// <param name="fromOutputDirective">true if called because of an output directive.</param>
         public void SetOutputEncoding(Encoding encoding, bool fromOutputDirective)
         {
             _outputEncoding = encoding;
         }
 
         /// <summary>
-        /// /
+        /// Log the given errors.
         /// </summary>
-        /// <param name="errors"></param>
+        /// <param name="errors">the compiler errors.</param>
         public void LogErrors(CompilerErrorCollection errors)
         {
             _errors = errors;
         }
 
         /// <summary>
-        /// /
+        /// Provide an AppDomain for the template code.
         /// </summary>
-        /// <param name="content"></param>
+        /// <param name="content">the content of the template.</param>
         /// <returns></returns>
         public AppDomain ProvideTemplatingAppDomain(string content)
         {
@@ -372,9 +375,9 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// Returns the requested service type.
         /// </summary>
-        /// <param name="serviceType"></param>
+        /// <param name="serviceType">the type of the service we should return.</param>
         /// <returns></returns>
         public object GetService(Type serviceType)
         {

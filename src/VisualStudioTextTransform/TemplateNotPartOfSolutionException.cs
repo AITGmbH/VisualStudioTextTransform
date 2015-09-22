@@ -13,14 +13,13 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// Initializes a new instance of the TemplateNotPartOfSolutionException class.
         /// </summary>
         public TemplateNotPartOfSolutionException()
-            : base()
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the TemplateNotPartOfSolutionException class.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">the message of the exception</param>
         public TemplateNotPartOfSolutionException(string message)
             : base(message)
         {
@@ -29,8 +28,8 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <summary>
         /// Initializes a new instance of the TemplateNotPartOfSolutionException class.
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="innerException"></param>
+        /// <param name="message">the message of the exception</param>
+        /// <param name="innerException">the underlying issue.</param>
         public TemplateNotPartOfSolutionException(string message, Exception innerException)
             : base(message, innerException)
         {
@@ -39,8 +38,8 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <summary>
         /// Initializes a new instance of the TemplateNotPartOfSolutionException class.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
+        /// <param name="info">the serialization info.</param>
+        /// <param name="context">the streaming context.</param>
         protected TemplateNotPartOfSolutionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {

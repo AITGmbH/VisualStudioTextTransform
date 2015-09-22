@@ -17,7 +17,8 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
             var globalProjectDir = Environment.GetEnvironmentVariable("PROJECT_DIRECTORY");
             if (string.IsNullOrEmpty(globalProjectDir))
             {
-                var configurationTestDir = Environment.CurrentDirectory;
+                var outDir = Environment.CurrentDirectory;
+                var configurationTestDir = Path.GetDirectoryName(outDir);
                 var testDir = Path.GetDirectoryName(configurationTestDir);
                 var buildDir = Path.GetDirectoryName(testDir);
                 globalProjectDir = Path.GetDirectoryName(buildDir);

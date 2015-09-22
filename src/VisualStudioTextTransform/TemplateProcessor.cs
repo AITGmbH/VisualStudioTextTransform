@@ -73,7 +73,6 @@ namespace AIT.Tools.VisualStudioTextTransform
 
                 using (new LogicalCallContextChange("NamespaceHint", finalNamespace))
                 {
-                    
                     var host = new VisualStudioTextTemplateHost(templateFileName, dte, resolver);
                     var engine = new Engine();
                     var input = File.ReadAllText(templateFileName);
@@ -162,6 +161,44 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
         }
 
+        public static bool ProcessSolution(DTE2 dte, string solutionFileName, Options options)
+        {
+            Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Opening__0_, solutionFileName);
+            dte.Solution.Open(solutionFileName);
+
+            Source.TraceEvent(TraceEventType.Verbose, 0, Resources.Program_Main_Finding_and_processing___tt_templates___);
+            var firstError =
+                FindTemplates(Path.GetDirectoryName(solutionFileName))
+                    .Select(t =>
+                    {
+                        try
+                        {
+                            return Tuple.Create(t, ProcessTemplate(dte, t, options));
+                        }
+                        catch (TemplateNotPartOfSolutionException)
+                        {
+                            Source.TraceEvent(TraceEventType.Warning, 2, "The template found within the solution dir was not part of the given solution ({0}): {1}", solutionFileName, t);
+                            return null;
+                        }
+                    })
+                    .Where(t => t != null)
+                    .FirstOrDefault(tuple => tuple.Item2.Count > 0);
+
+            if (firstError != null)
+            {
+                Source.TraceEvent(TraceEventType.Warning, 0, Resources.Program_Main_FAILED_to_process___0__,
+                    firstError.Item1);
+                foreach (var error in firstError.Item2)
+                {
+                    Source.TraceEvent(TraceEventType.Error, 0, Resources.Program_Main_, error);
+                }
+                return false;
+            }
+
+            Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Everything_worked_);
+            return true;
+        }
+
         /// <summary>
         /// /
         /// </summary>
@@ -186,40 +223,10 @@ namespace AIT.Tools.VisualStudioTextTransform
                 var processId = result.Item1;
                 try
                 {
-                    Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Opening__0_, solutionFileName);
-                    dte.Solution.Open(solutionFileName);
-
-                    Source.TraceEvent(TraceEventType.Verbose, 0, Resources.Program_Main_Finding_and_processing___tt_templates___);
-                    var firstError =
-                        FindTemplates(Path.GetDirectoryName(solutionFileName))
-                            .Select(t =>
-                                    { 
-                                        try
-                                        {
-                                            return Tuple.Create(t, ProcessTemplate(dte, t, options));
-                                        }
-                                        catch (TemplateNotPartOfSolutionException)
-                                        {
-                                            Source.TraceEvent(TraceEventType.Warning, 2, "The template found within the solution dir was not part of the given solution ({0}): {1}", solutionFileName, t);
-                                            return null;
-                                        }
-                                    })
-                            .Where(t => t != null)
-                            .FirstOrDefault(tuple => tuple.Item2.Count > 0);
-
-                    if (firstError != null)
-                    {
-                        Source.TraceEvent(TraceEventType.Warning, 0, Resources.Program_Main_FAILED_to_process___0__,
-                            firstError.Item1);
-                        foreach (var error in firstError.Item2)
-                        {
-                            Source.TraceEvent(TraceEventType.Error, 0, Resources.Program_Main_, error);
-                        }
-                        return false;
-                    }
-
-                    Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Everything_worked_);
-                    return true;
+                    var controller = new VisualStudioController(dte);
+                    var tt = controller.GetTextTransformFeature();
+                    return tt.TransformTemplates(solutionFileName, options.TargetDir);
+                    //return ProcessSolution(dte, solutionFileName, options);
                 }
                 finally
                 {

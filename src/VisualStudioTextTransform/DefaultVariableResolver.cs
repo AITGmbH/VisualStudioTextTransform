@@ -17,11 +17,11 @@ namespace AIT.Tools.VisualStudioTextTransform
         private readonly string _targetDir;
 
         /// <summary>
-        /// /
+        /// Initializes a new instance of the <see cref="DefaultVariableResolver"/> class.
         /// </summary>
-        /// <param name="projectDir"></param>
-        /// <param name="solutionDir"></param>
-        /// <param name="targetDir"></param>
+        /// <param name="projectDir">the project directory</param>
+        /// <param name="solutionDir">the solution directory</param>
+        /// <param name="targetDir">the target directory.</param>
         public DefaultVariableResolver(string projectDir, string solutionDir, string targetDir)
         {
             _projectDir = projectDir;
@@ -30,7 +30,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// returns the target directory.
         /// </summary>
         public string TargetDir
         {
@@ -41,7 +41,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// returns the solution directory.
         /// </summary>
         public string SolutionDir
         {
@@ -52,7 +52,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// returns the project directory.
         /// </summary>
         public string ProjectDir
         {
@@ -65,8 +65,8 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <summary>
         /// Create a default instance by fetching the paths from the solution.
         /// </summary>
-        /// <param name="dte"></param>
-        /// <param name="templateFile"></param>
+        /// <param name="dte">the <see cref="DTE2"/> instance.</param>
+        /// <param name="templateFile">the template file.</param>
         /// <returns></returns>
         public static DefaultVariableResolver CreateFromDte(DTE2 dte, string templateFile)
         {
@@ -94,9 +94,9 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// Return a new instance with a changed TargetDir.
+        /// Return a new instance with a changed Target-Directory.
         /// </summary>
-        /// <param name="targetDir"></param>
+        /// <param name="targetDir">the target directory.</param>
         /// <returns></returns>
         public DefaultVariableResolver WithTargetDir(string targetDir)
         {
@@ -106,7 +106,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <summary>
         /// The simple resolution strategy of this instance.
         /// </summary>
-        /// <param name="variable"></param>
+        /// <param name="variable">the variable to resolve.</param>
         /// <returns></returns>
         public string SimpleResolveVariable(string variable)
         {
@@ -130,9 +130,9 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// /
+        /// Resolves a given variable.
         /// </summary>
-        /// <param name="variable"></param>
+        /// <param name="variable">the variable to resolve.</param>
         /// <returns></returns>
         public IEnumerable<string> ResolveVariable(string variable)
         {
