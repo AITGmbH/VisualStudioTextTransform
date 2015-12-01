@@ -80,9 +80,11 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="TestDictionaryVariableResolver.cs" />
     <Compile Include="StaThread.cs" />
     <Compile Include="TestEnv.cs" />
     <Compile Include="IntegrationTest.cs" />
+    <Compile Include="TestFindVariable.cs" />
     <Compile Include="TestVariableResolver.cs" />
     <None Include="App.config">
       <SubType>Designer</SubType>
@@ -160,6 +162,15 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SimpleExample.tt</DependentUpon>
+    </Content>
+    <Content Include="TestTemplates\KnownProperty.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>KnownProperty.txt</LastGenOutput>
+    </Content>
+    <Content Include="TestTemplates\KnownProperty.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KnownProperty.tt</DependentUpon>
     </Content>
     <Content Include="TestTemplates\VisualStudioExample.txt">
       <AutoGen>True</AutoGen>

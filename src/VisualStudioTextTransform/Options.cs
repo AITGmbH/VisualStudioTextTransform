@@ -1,4 +1,5 @@
-﻿using CommandLine;
+﻿using System.Collections.Generic;
+using CommandLine;
 
 namespace AIT.Tools.VisualStudioTextTransform
 {
@@ -17,6 +18,14 @@ namespace AIT.Tools.VisualStudioTextTransform
             set;
         }
 
-
+        /// <summary>
+        /// Set properties to resolve paths from within the template.
+        /// </summary>
+        [Option('p', "properties", DefaultValue = null, Required = false, HelpText = "Set custom properties - split by ';' - to help resolve paths (property names cannot contain ':' or ';'): Example 'path1:C:\\path1;path2:C:\\path2'")]
+        public string Properties
+        {
+            get;
+            set;
+        }
     }
 }

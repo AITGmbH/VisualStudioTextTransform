@@ -21,11 +21,12 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <summary>
         ///     Install the given packages to the given project
         /// </summary>
-        public bool TransformTemplates(string solutionFile, string targetDirectory)
+        public bool TransformTemplates(string solutionFile, Options options)
         {
             var dict = new Dictionary<string, FeatureDataDictionary>();
             dict["solutionFile"] = new FeatureDataDictionary(solutionFile, null);
-            dict["targetDirectory"] = new FeatureDataDictionary(targetDirectory, null);
+            dict["targetDirectory"] = new FeatureDataDictionary(options.TargetDir, null);
+            dict["properties"] = new FeatureDataDictionary(options.Properties, null);
 
             var result = _service.ExecuteFeature(_handle, new FeatureDataDictionary("TRANSFORM_SOLUTION", dict));
             return bool.Parse(result.Data);

@@ -86,6 +86,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DictionaryVariableResolver.cs" />
     <Compile Include="TransformTemplatesFeature.cs" />
     <Compile Include="CombiningVariableResolver.cs" />
     <Compile Include="DefaultVariableResolver.cs" />

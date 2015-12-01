@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using AIT.VisualStudio.Controlling;
 using EnvDTE80;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -53,7 +54,7 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         public static void ClassCleanup()
         {
             DteHelper.CleanupDteInstance(_processId, _dte);
-            
+
             if (_thread != null)
             {
                 _thread.Dispose();
@@ -68,7 +69,9 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
             {
                 var itemPath = GetItemPath(testTemplateName);
                 Assert.IsTrue(File.Exists(itemPath));
-                var result = TemplateProcessor.ProcessTemplateInMemory(_dte, itemPath, DefaultVariableResolver.CreateFromDte(_dte, itemPath));
+                var defaultResolver = DefaultVariableResolver.CreateFromDte(_dte, itemPath);
+                var resolver = new CombiningVariableResolver(DictionaryVariableResolver.FromOptionsValue("KnownProperty:" + defaultResolver.ResolveVariable("TargetDir").First()), defaultResolver);
+                var result = TemplateProcessor.ProcessTemplateInMemory(_dte, itemPath, resolver);
                 Assert.IsFalse(result.Item2.Errors.HasErrors);
                 Assert.IsFalse(result.Item2.Errors.Count > 0);
                 Assert.AreEqual(expected, result.Item1);
@@ -147,6 +150,15 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         }
 
         /// <summary>
+        /// Test template not part of the solution.
+        /// </summary>
+        [TestMethod]
+        public void TestKnownProperty()
+        {
+            TestExecutionByName("KnownProperty.tt", HelperClass.GetResult());
+        }
+
+        /// <summary>
         /// Test template using Host.Resolve.
         /// </summary>
         [TestMethod]
@@ -154,7 +166,7 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         {
             const string template = "GetTemplatePathViaHostResolve.tt";
             var itemPath = GetItemPath(template);
-            
+
             TestExecutionByName(template, Path.GetDirectoryName(itemPath));
         }
 

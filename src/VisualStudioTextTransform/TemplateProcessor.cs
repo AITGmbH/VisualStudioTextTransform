@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using AIT.Tools.VisualStudioTextTransform.Properties;
 using AIT.VisualStudio.Controlling;
 using EnvDTE80;
@@ -111,7 +112,7 @@ namespace AIT.Tools.VisualStudioTextTransform
 
             var defaultResolver = DefaultVariableResolver.CreateFromDte(dte, templateFileName);
 
-            IVariableResolver resolver = defaultResolver;
+            IVariableResolver resolver = new CombiningVariableResolver(DictionaryVariableResolver.FromOptionsValue(options.Properties), defaultResolver);
             Source.TraceEvent(TraceEventType.Information, 1, "Default TargetDir {0} will be used", defaultResolver.TargetDir);
             Source.TraceEvent(TraceEventType.Information, 1, "Default SolutionDir {0} will be used", defaultResolver.SolutionDir);
             Source.TraceEvent(TraceEventType.Information, 1, "Default ProjectDir {0} will be used", defaultResolver.ProjectDir);
@@ -121,7 +122,9 @@ namespace AIT.Tools.VisualStudioTextTransform
                 if (Directory.Exists(options.TargetDir))
                 {
                     Source.TraceEvent(TraceEventType.Information, 1, "TargetDir {0} will be added ", options.TargetDir);
-                    resolver = new CombiningVariableResolver(new DefaultVariableResolver(null, null, options.TargetDir), resolver);
+                    resolver = new CombiningVariableResolver(
+                            new DefaultVariableResolver(null, null, options.TargetDir),
+                            resolver);
                 }
                 else
                 {
@@ -168,6 +171,9 @@ namespace AIT.Tools.VisualStudioTextTransform
         public static bool ProcessSolution(DTE2 dte, string solutionFileName, Options options)
         {
             Source.TraceEvent(TraceEventType.Information, 0, Resources.Program_Main_Opening__0_, solutionFileName);
+            Source.TraceEvent(TraceEventType.Information, 0, "Version: {0}", Assembly.GetExecutingAssembly().GetName().Version);
+            Source.TraceEvent(TraceEventType.Information, 0, "options.TargetDir: {0}", options.TargetDir);
+            Source.TraceEvent(TraceEventType.Information, 0, "options.Properties: {0}", options.Properties);
             dte.Solution.Open(solutionFileName);
 
             Source.TraceEvent(TraceEventType.Verbose, 0, Resources.Program_Main_Finding_and_processing___tt_templates___);
@@ -235,7 +241,7 @@ namespace AIT.Tools.VisualStudioTextTransform
                     using (var controller = new VisualStudioController(dte))
                     {
                         var tt = controller.GetTextTransformFeature();
-                        return tt.TransformTemplates(solutionFileName, options.TargetDir);
+                        return tt.TransformTemplates(solutionFileName, options);
                     }
                     //return ProcessSolution(dte, solutionFileName, options);
                 }

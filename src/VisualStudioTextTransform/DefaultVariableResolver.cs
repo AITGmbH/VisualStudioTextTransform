@@ -125,8 +125,8 @@ namespace AIT.Tools.VisualStudioTextTransform
                     return _targetDir;
                 }
             }
-            throw new ArgumentOutOfRangeException(
-                string.Format(CultureInfo.CurrentUICulture, "Unknown variable {0}", variable));
+
+            return null;
         }
 
         /// <summary>

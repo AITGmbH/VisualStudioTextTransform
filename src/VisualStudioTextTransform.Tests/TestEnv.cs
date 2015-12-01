@@ -27,7 +27,6 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
             _solutionDir = Path.Combine(_globalProjectDir, "src");
             _testProjectDir = Path.Combine(_solutionDir, "VisualStudioTextTransform.Tests");
             _solutionFile = Path.GetFullPath(Path.Combine(_solutionDir, "VisualStudioTextTransform.sln"));
-            
         }
 
         public string TestProjectDir

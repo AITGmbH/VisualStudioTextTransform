@@ -43,7 +43,6 @@ namespace AIT.Tools.VisualStudioTextTransform
         protected TemplateNotPartOfSolutionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            
         }
     }
 }

@@ -61,6 +61,16 @@ namespace AIT.Tools.VisualStudioTextTransform.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expected propertyValues to contain a colon for every entry.
+        /// </summary>
+        internal static string DictionaryVariableResolver_FromOptionsString_Expected_propertiesString_to_contain_a_colon_for_every_entry {
+            get {
+                return ResourceManager.GetString("DictionaryVariableResolver_FromOptionsString_Expected_propertiesString_to_contain" +
+                        "_a_colon_for_every_entry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 	Error: {0}.
         /// </summary>
         internal static string Program_Main_ {

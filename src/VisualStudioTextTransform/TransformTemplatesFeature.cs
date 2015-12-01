@@ -38,7 +38,8 @@ namespace AIT.Tools.VisualStudioTextTransform
                     {
                         var targetDirectory = dataDictionary["targetDirectory"].Data;
                         var solutionFile = dataDictionary["solutionFile"].Data;
-                        var result = _helper.TransformTemplates(solutionFile, new Options {TargetDir = targetDirectory });
+                        var properties = dataDictionary["properties"].Data;
+                        var result = _helper.TransformTemplates(solutionFile, new Options { TargetDir = targetDirectory, Properties = properties });
 
                         return new FeatureDataDictionary(result ? "true" : "false", null);
                     }

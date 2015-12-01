@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.TextTemplating;
 namespace AIT.Tools.VisualStudioTextTransform
 {
     /// <summary>
-    /// <see href="https://msdn.microsoft.com/en-us/library/bb126579.aspx">See here</see> for more details 
+    /// <see href="https://msdn.microsoft.com/en-us/library/bb126579.aspx">See here</see> for more details
     /// </summary>
     public class VisualStudioTextTemplateHost : ITextTemplatingEngineHost, IServiceProvider
     {
@@ -55,12 +55,39 @@ namespace AIT.Tools.VisualStudioTextTransform
                 throw new ArgumentNullException("resolver");
             }
             _templateFile = templateFile;
-            
+
             _dte = dte;
             _resolver = resolver;
             var directoryName = Path.GetDirectoryName(templateFile);
             Debug.Assert(directoryName != null, "directoryName != null, don't expect templateFile to be a root directory!");
             _templateDir = Path.GetFullPath(directoryName);
+        }
+
+        private static void FindVariablesRecursive(string path, List<string> found)
+        {
+            var beginIndex = path.IndexOf("$(", StringComparison.Ordinal);
+            if (beginIndex < 0)
+            {
+                return;
+            }
+
+            var sub = path.Substring(beginIndex + 2);
+            var endIndex = sub.IndexOf(')');
+            var name = sub.Substring(0, endIndex);
+            found.Add(name);
+            FindVariablesRecursive(sub.Substring(endIndex + 1), found);
+        }
+
+        /// <summary>
+        /// Find all variables in the specified path.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> FindVariables(string path)
+        {
+            var l = new List<string>();
+            FindVariablesRecursive(path, l);
+            return l;
         }
 
         private IEnumerable<string> ReplaceProjectVar(string path, string variable)
@@ -69,7 +96,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             {
                 yield return path.Replace(string.Format(CultureInfo.InvariantCulture, "$({0})", variable), resolvedVariable);
             }
-        } 
+        }
 
         private IEnumerable<string> ReplaceProjectVarsPrivate(string path)
         {
@@ -78,10 +105,15 @@ namespace AIT.Tools.VisualStudioTextTransform
                 path = path.Substring(FileProtocol.Length);
             }
 
-            return
-                ReplaceProjectVar(path, "ProjectDir")
-                .SelectMany(p => ReplaceProjectVar(p, "SolutionDir"))
-                .SelectMany(p => ReplaceProjectVar(p, "TargetDir"));
+            var vars = FindVariables(path);
+            IEnumerable<string> results = new [] { path };
+            foreach (var var in vars)
+            {
+                var localVar = var;
+                results = results.SelectMany(p => ReplaceProjectVar(path, localVar));
+            }
+
+            return results;
         }
 
 
@@ -89,7 +121,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         {
             // check relative to template file
             yield return Path.Combine(_templateDir, path);
-            
+
             // First check if we have a full path here
             yield return path;
             // TODO: Add more (GAC?, configured by CLI?)
@@ -118,10 +150,18 @@ namespace AIT.Tools.VisualStudioTextTransform
             // Distinct because Path.Combine ignores the first parameter when the second one is a full path -> duplicates.
             var paths = possiblePaths.SelectMany(PossibleFullPaths).Distinct().ToList();
 
+            bool found = false;
             foreach (var possiblePath in paths)
             {
+                found = true;
                 Source.TraceEvent(TraceEventType.Verbose, 0, "Considering {0}", possiblePath);
             }
+
+            if (!found)
+            {
+                Source.TraceEvent(TraceEventType.Error, 0, "No possible resolution for {0}", path);
+            }
+
             return paths;
         }
 
@@ -132,7 +172,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         {
             get { return _templateFile; }
         }
-        
+
         /// <summary>
         /// Default fall-back if not specified by the file
         /// </summary>
@@ -194,10 +234,10 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// Called by the Engine to enquire about 
-        /// the processing options you require. 
-        /// If you recognize that option, return an 
-        /// appropriate value. 
+        /// Called by the Engine to enquire about
+        /// the processing options you require.
+        /// If you recognize that option, return an
+        /// appropriate value.
         /// Otherwise, pass back NULL.
         /// </summary>
         public object GetHostOption(string optionName)
@@ -217,13 +257,13 @@ namespace AIT.Tools.VisualStudioTextTransform
 
         /// <summary>
         /// The engine calls this method to resolve assembly references used in
-        /// the generated transformation class project and for the optional 
+        /// the generated transformation class project and for the optional
         /// assembly directive if the user has specified it in the text template.
         /// This method can be called 0, 1, or more times.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We print the exception and don't really care if we can load the assembly or not."), 
-         SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", 
+            Justification = "We print the exception and don't really care if we can load the assembly or not."),
+         SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods",
             MessageId = "System.Reflection.Assembly.LoadWithPartialName",
             Justification = "There is no satisfying workaround.")]
         public string ResolveAssemblyReference(string assemblyReference)
@@ -238,7 +278,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             try
             {
                 // Well yes it's obsolete, but see http://stackoverflow.com/questions/11659594/load-latest-assembly-version-dynamically-from-gac
-                // for the alternatives 
+                // for the alternatives
                 // - use all versions -> not possible here
                 // - PInvoke -> bad and not cross plat
                 // - Specifying the GAC directories directly -> bad
@@ -262,7 +302,7 @@ namespace AIT.Tools.VisualStudioTextTransform
         }
 
         /// <summary>
-        /// The engine calls this method based on the directives the user has 
+        /// The engine calls this method based on the directives the user has
         /// specified in the text template.
         /// This method can be called 0, 1, or more times.
         /// </summary>
@@ -284,9 +324,9 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
         }
         /// <summary>
-        /// A directive processor can call this method if a file name does not 
+        /// A directive processor can call this method if a file name does not
         /// have a path.
-        /// The host can attempt to provide path information by searching 
+        /// The host can attempt to provide path information by searching
         /// specific paths for the file and returning the file and path if found.
         /// This method can be called 0, 1, or more times.
         /// </summary>

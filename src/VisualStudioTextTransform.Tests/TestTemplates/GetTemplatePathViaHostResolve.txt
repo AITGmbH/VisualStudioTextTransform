@@ -1,1 +1,1 @@
-﻿c:\PROJ\VisualStudioTextTransform\src\VisualStudioTextTransform.Tests\TestTemplates
+﻿C:\PROJ\VisualStudioTextTransform\src\VisualStudioTextTransform.Tests\TestTemplates

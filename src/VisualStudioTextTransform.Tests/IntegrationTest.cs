@@ -17,7 +17,7 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         public void TestMainRun()
         {
             var testEnv = new TestEnv();
-            var result = Program.Main(new[] {testEnv.SolutionFile});
+            var result = Program.Main(new[] { testEnv.SolutionFile, "--properties", "KnownProperty:" + Path.Combine(testEnv.SolutionDir, "..", "build", "test", "net45") + Path.DirectorySeparatorChar });
             Assert.IsTrue(result == 0);
         }
     }

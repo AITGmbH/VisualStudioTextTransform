@@ -183,4 +183,7 @@
   <data name="Program_Main_Application_crashed_with___0_" xml:space="preserve">
     <value>Application crashed with: {0}</value>
   </data>
+  <data name="DictionaryVariableResolver_FromOptionsString_Expected_propertiesString_to_contain_a_colon_for_every_entry" xml:space="preserve">
+    <value>Expected propertyValues to contain a colon for every entry</value>
+  </data>
 </root>

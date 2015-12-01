@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using AIT.Tools.VisualStudioTextTransform.Properties;
 using AIT.VisualStudio.Controlling;
 using CommandLine;
@@ -34,6 +35,7 @@ namespace AIT.Tools.VisualStudioTextTransform
 
         private static int ExecuteMain(string[] arguments)
         {
+            Source.TraceEvent(TraceEventType.Verbose, 0, "Starting with [ \"{0}\" ]", string.Join("\"; \"", arguments.Select(a => a.Replace("\\", "\\\\").Replace("\"", "\\\""))));
             if (arguments.Length == 0)
             {
                 throw new ArgumentException(Resources.Program_Main_you_must_provide_a_solution_file);
@@ -44,7 +46,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             var options = new Options();
             Parser.Default.ParseArguments(opts, options);
 
-            return 
+            return
                 TemplateProcessor.ProcessSolution(solutionFileName, options) ? 0 : 1;
         }
 
