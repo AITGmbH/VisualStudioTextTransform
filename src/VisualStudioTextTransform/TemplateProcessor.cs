@@ -133,6 +133,7 @@ namespace AIT.Tools.VisualStudioTextTransform
             }
 
             var result = ProcessTemplateInMemory(dte, templateFileName, resolver);
+
             var host = result.Item2;
             var output = result.Item1;
 
@@ -145,6 +146,47 @@ namespace AIT.Tools.VisualStudioTextTransform
                 File.SetAttributes(outFilePath, attr & ~FileAttributes.ReadOnly);
                 File.Delete(outFilePath);
             }
+
+            if (host.Errors.HasErrors)
+            {
+                foreach (var error in host.Errors)
+                {
+                    var msg = error.ToString();
+
+                    var ind = msg.IndexOf("System.UnauthorizedAccessException");
+                    if (ind >= 0)
+                    {
+                        Source.TraceEvent(TraceEventType.Warning, 0, "trying again because System.UnauthorizedAccessException was detected: {0}", msg);
+
+                        // This could be a case where the template tried to write to the file beforehand.
+                        // We already changed attributes above, but just to be sure:
+                        var sub1 = msg.Substring(ind);
+                        var fileStart = sub1.IndexOf('\'');
+                        if (fileStart >= 0)
+                        {
+                            var fileStartingString = sub1.Substring(fileStart + 1);
+                            var fileEnd = fileStartingString.IndexOf('\'');
+                            if (fileEnd >= 0)
+                            {
+                                var filePath = fileStartingString.Substring(0, fileEnd);
+                                Source.TraceEvent(TraceEventType.Information, 0, "make sure '{0}' is not readonly", filePath);
+                                if (File.Exists(filePath))
+                                {
+                                    var attr = File.GetAttributes(filePath);
+                                    File.SetAttributes(filePath, attr & ~FileAttributes.ReadOnly);
+                                    File.Delete(filePath);
+                                }
+                            }
+                        }
+
+                        result = ProcessTemplateInMemory(dte, templateFileName, resolver);
+                        host = result.Item2;
+                        output = result.Item1;
+                        break;
+                    }
+                }
+            }
+
             File.WriteAllText(outFilePath, output, host.FileEncoding);
             return host.Errors;
         }
