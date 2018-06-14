@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Text.RegularExpressions;
 using System.Threading;
 using AIT.Tools.VisualStudioTextTransform.Properties;
 using EnvDTE80;
@@ -23,39 +25,96 @@ namespace AIT.Tools.VisualStudioTextTransform
         /// <returns></returns>
         private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
 
-        // From http://www.viva64.com/en/b/0169/
-        internal static DTE2 GetById(int id)
+        public static Regex CreateDteObjectNameRegex(int processId) => new Regex(@"!VisualStudio.DTE\.\d+\.\d+\:" + processId, RegexOptions.IgnoreCase);
+
+        /// <summary>
+        /// Gets the DTE object from any devenv process.
+        /// </summary>
+        /// <remarks>
+        /// See http://www.viva64.com/en/b/0169/ and https://www.helixoft.com/blog/creating-envdte-dte-for-vs-2017-from-outside-of-the-devenv-exe.html
+        ///</remarks>
+        /// <param name="processId"></param>
+        /// <returns>
+        /// Retrieved DTE object or <see langword="null"> if not found.
+        /// </see></returns>
+        private static DTE2 GetFromProcess(int processId)
         {
-            //rot entry for visual studio running under current process.
-            var rotEntry = string.Format(CultureInfo.InvariantCulture, "!VisualStudio.DTE.12.0:{0}", id);
-            IRunningObjectTable rot;
-            NativeMethods.GetRunningObjectTable(0, out rot);
-            IEnumMoniker enumMoniker;
-            rot.EnumRunning(out enumMoniker);
-            enumMoniker.Reset();
-            IntPtr fetched = IntPtr.Zero;
-            IMoniker[] moniker = new IMoniker[1];
-            while (enumMoniker.Next(1, moniker, fetched) == 0)
+            DTE2 result = null;
+            IBindCtx bindCtx = null;
+            IRunningObjectTable rot = null;
+            IEnumMoniker enumMonikers = null;
+
+            try
             {
-                IBindCtx bindCtx;
-                NativeMethods.CreateBindCtx(0, out bindCtx);
-                string displayName;
-                moniker[0].GetDisplayName(bindCtx, null, out displayName);
-                if (displayName == rotEntry)
+                Marshal.ThrowExceptionForHR(NativeMethods.CreateBindCtx(reserved: 0, ppbc: out bindCtx));
+                bindCtx.GetRunningObjectTable(out rot);
+                rot.EnumRunning(out enumMonikers);
+
+                IMoniker[] moniker = new IMoniker[1];
+                IntPtr numberFetched = IntPtr.Zero;
+                Regex monikerRegex = CreateDteObjectNameRegex(processId);
+
+                object runningObject = null;
+                while (enumMonikers.Next(1, moniker, numberFetched) == 0)
                 {
-                    object comObject;
-                    var result = rot.GetObject(moniker[0], out comObject);
-                    Marshal.ThrowExceptionForHR(result);
-                    return (DTE2)comObject;
+                    IMoniker runningObjectMoniker = moniker[0];
+
+                    string name = null;
+
+                    try
+                    {
+                        if (runningObjectMoniker != null)
+                        {
+                            runningObjectMoniker.GetDisplayName(bindCtx, null, out name);
+                        }
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        // Do nothing, there is something in the ROT that we do not have access to.
+                    }
+
+                    if (!string.IsNullOrEmpty(name) && monikerRegex.IsMatch(name))
+                    {
+                        Source.TraceEvent(TraceEventType.Verbose, 1, "Found matching COM object '{0}'.", name);
+                        Marshal.ThrowExceptionForHR(rot.GetObject(runningObjectMoniker, out runningObject));
+                        try
+                        {
+                            result = (DTE2)runningObject;
+                            break;
+                        }
+                        catch (InvalidCastException)
+                        {
+                            Source.TraceEvent(TraceEventType.Warning, 1, "Found COM object with name '{0}', but was unable to cast to DTE2", name);
+                        }
+                    }
+                    else
+                    {
+                        Source.TraceEvent(TraceEventType.Verbose, 1, "COM object '{0}' does not match regex.", name);
+                    }
                 }
-                else
-                {
-                    Source.TraceEvent(TraceEventType.Information, 0, "Found event with name: {0}", displayName);
-                }
+
             }
-            return null;
+            finally
+            {
+                if (enumMonikers != null)
+                {
+                    Marshal.ReleaseComObject(enumMonikers);
+                }
+
+                if (rot != null)
+                {
+                    Marshal.ReleaseComObject(rot);
+                }
+
+                //if (bindCtx != null)
+                //{
+                //    Marshal.ReleaseComObject(bindCtx);
+                //}
+            }
+
+            return result;
         }
-        
+
         /// <summary>
         /// Tries to create a DTE instance.
         /// First it tries to start a new Visual Studio instance and to fetch the DTE instance.
@@ -77,11 +136,11 @@ namespace AIT.Tools.VisualStudioTextTransform
             // We Create our own instance for customized logging + killing afterwards
             var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
             var pfx64 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-            var vs2013Relative = Path.Combine("Microsoft Visual Studio 12.0", "Common7", "IDE", "devenv.exe");
+            var vs2015Relative = Path.Combine("Microsoft Visual Studio 14.0", "Common7", "IDE", "devenv.exe");
             var testPaths = new[]
             {
-                Path.Combine(pf, vs2013Relative),
-                Path.Combine(pfx64, vs2013Relative)
+                Path.Combine(pf, vs2015Relative),
+                Path.Combine(pfx64, vs2015Relative)
             };
             var devenvExe = testPaths.FirstOrDefault(File.Exists);
             if (string.IsNullOrEmpty(devenvExe))
@@ -110,8 +169,14 @@ namespace AIT.Tools.VisualStudioTextTransform
                     while (dte == null && currentSpan < timeout && !start.HasExited)
                     {
                         Thread.Sleep(waitTime);
+                        if (start.HasExited)
+                        {
+                            Source.TraceEvent(TraceEventType.Error, 1, "devenv Process exited (id: '{0}')", start.Id);
+                            break;
+                        }
+
                         Source.TraceInformation("Trying to get DTE instance from process...");
-                        dte = GetById(start.Id);
+                        dte = GetFromProcess(start.Id);
                         currentSpan += waitTime;
                     }
 
@@ -144,8 +209,15 @@ namespace AIT.Tools.VisualStudioTextTransform
         private static Tuple<int, DTE2> CreateDteInstanceWithActivator()
         {
             Source.TraceEvent(TraceEventType.Verbose, 1, "Creating Visual Studio (devenv.exe) instance via COM.");
-            var dteType = Type.GetTypeFromProgID("VisualStudio.DTE.12.0", true);
-            return Tuple.Create(-1, (DTE2)Activator.CreateInstance(dteType, true));
+            try
+            {
+                var dteType = Type.GetTypeFromProgID("VisualStudio.DTE.14.0", true);
+                return Tuple.Create(-1, (DTE2)Activator.CreateInstance(dteType, true));
+            }
+            catch (Exception e)
+            {
+                throw new TargetInvocationException("Creating DTE-Instance failed, make sure Visual Studio 2015 is installed! See inner exception for details.", e);
+            }
         }
 
         /// <summary>

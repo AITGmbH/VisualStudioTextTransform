@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net.Mime;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using EnvDTE80;
@@ -12,6 +13,8 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
 
     class STAThread : IDisposable
     {
+        private static readonly TraceSource Source = new TraceSource("AIT.Tools.VisualStudioTextTransform");
+
         public STAThread()
         {
             using (mre = new ManualResetEvent(false))
@@ -30,13 +33,40 @@ namespace AIT.Tools.VisualStudioTextTransform.Tests
         public void BeginInvoke(Delegate dlg, params Object[] args)
         {
             if (ctx == null) throw new ObjectDisposedException("STAThread");
-            ctx.Post((_) => dlg.DynamicInvoke(args), null);
+            ctx.Post((_) =>
+                     {
+                         try
+                         {
+                             dlg.DynamicInvoke(args);
+                         }
+                         catch (Exception e)
+                         {
+                             Source.TraceEvent(TraceEventType.Critical, 1, "STAThread.BeginInvoke background processing failed: {0}", e);
+                             throw;
+                         }
+                     }, null);
         }
         public object Invoke(Delegate dlg, params Object[] args)
         {
             if (ctx == null) throw new ObjectDisposedException("STAThread");
             object result = null;
-            ctx.Send((_) => result = dlg.DynamicInvoke(args), null);
+            Exception error = null;
+            ctx.Send((_) =>
+                     {
+                         try
+                         {
+                             result = dlg.DynamicInvoke(args);
+                         }
+                         catch (Exception e)
+                         {
+                             error = e;
+                         }
+                     }, null);
+            if (error != null)
+            {
+                throw new TargetInvocationException(error);
+            }
+
             return result;
         }
 

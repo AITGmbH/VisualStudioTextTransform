@@ -42,9 +42,9 @@ namespace AIT.Tools.VisualStudioTextTransform
              Justification = "Names given by a foreign API"), PreserveSig]
         public static extern int CoRegisterMessageFilter(IMessageFilter lpMessageFilter, out IMessageFilter lplpMessageFilter);
 
-        [DllImport("ole32.dll", PreserveSig = false)]
-        internal static extern void CreateBindCtx(int reserved,
-            out IBindCtx ppbc);
+        [DllImport("ole32.dll")]
+        internal static extern int CreateBindCtx(uint reserved, out IBindCtx ppbc);
+
         [DllImport("ole32.dll", PreserveSig = false)]
         internal static extern void GetRunningObjectTable(int reserved,
             out IRunningObjectTable prot);

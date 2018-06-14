@@ -1,1 +1,1 @@
-﻿c:\AIT-Source\Repos\VisualStudioTextTransform\src\VisualStudioTextTransform.Tests\TestTemplates
+﻿C:\proj\VisualStudioTextTransform\src\VisualStudioTextTransform.Tests\TestTemplates
